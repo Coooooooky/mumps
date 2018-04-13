@@ -204,4 +204,4 @@ single_double_complex_dcomplex: $(SCDZOBJS)
 	rm -f *_lapack_single_double_complex_dcomplex.o
 
 clean: 
-	'rm' -f *.a *.o *.mod *.l core
+	$(RM) *.a *.o *.mod *.l core
