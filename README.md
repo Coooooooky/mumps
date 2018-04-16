@@ -4,7 +4,9 @@ Related: [Fortran 2018 examples](https://github.com/scivision/fortran2018-exampl
 
 
 ## LAPACK95
-To build LAPACK95 library with any Fortran compiler simply:
+To build 
+[LAPACK95](http://www.netlib.org/lapack95/)
+library with any Fortran compiler simply:
 ```sh
 cd LAPACK95/
 make double -C SRC 
