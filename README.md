@@ -4,7 +4,9 @@ If you're not a Gemini 3-D user, please get these libraries from their original 
 
 
 ## LAPACK95
-To build LAPACK95 library with any Fortran compiler simply:
+To build 
+[LAPACK95](http://www.netlib.org/lapack95/)
+library with any Fortran compiler simply:
 ```sh
 cd LAPACK95/
 make double -C SRC 
