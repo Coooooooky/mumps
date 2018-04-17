@@ -1,0 +1,47 @@
+# gfortran >= 6 is required
+language: c
+fast_finish: true
+
+os:
+  - linux
+  - osx
+
+env: FC=gfortran
+
+dist: xenial
+group: travis_latest
+
+git:
+  depth: 3
+
+addons:
+  apt:
+    packages: ['gfortran','liblapack-dev','libopenblas-dev','libopenmpi-dev']
+
+
+
+before_install:
+  - if [[ $TRAVIS_OS_NAME == osx ]]; then
+      brew update;
+      brew install gcc || true;
+      brew link --overwrite gcc;
+      brew install lapack openblas open-mpi;
+    fi
+# takes 15 minutes to setup on Travis for Linux.    
+#  - if [[ $TRAVIS_OS_NAME == linux ]]; then
+#      export HOMEBREW_FORCE_VENDOR_RUBY=1;
+#      sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)";
+#      export PATH="/home/travis/.linuxbrew/bin:$PATH";
+#      brew install gcc opencoarrays;
+#    fi
+    
+
+install:
+# Lapack95
+  - cd $HOME/LAPACK95
+  - make double -C SRC
+  - make
+
+# MUMPS
+  - cd $HOME/MUMPS
+  - make
