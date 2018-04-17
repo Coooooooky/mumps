@@ -9,6 +9,7 @@ os:
 env: FC=gfortran
 
 dist: xenial
+sudo: required
 group: travis_latest
 
 git:
@@ -38,10 +39,10 @@ before_install:
 
 install:
 # Lapack95
-  - cd $HOME/LAPACK95
+  - cd $TRAVIS_BUILD_DIR/LAPACK95
   - make double -C SRC
   - make
 
 # MUMPS
-  - cd $HOME/MUMPS
+  - cd TRAVIS_BUILD_DIR/MUMPS
   - make
