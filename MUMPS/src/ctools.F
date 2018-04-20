@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -525,7 +525,7 @@ C
       ENDIF
       IF ( .not. ( I_AM_SLAVE .and. I_AM_MASTER .and. KEEP(52) .eq. 0
      &         .and. KEEP(55) .ne. 0 ) ) THEN
-        NB_INT  = NB_INT  + KEEP8(14)
+        NB_INT  = NB_INT  + KEEP8(27)
       END IF
       IF ( I_AM_SLAVE .and. KEEP(38) .ne. 0 ) THEN
         NB_INT = NB_INT + 2_8 * N8

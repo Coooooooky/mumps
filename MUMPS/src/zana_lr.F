@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -292,16 +292,21 @@ C
         INTEGER, TARGET, INTENT(IN)         :: IW(LW)
         INTEGER, INTENT(IN)                 :: LEN(N)
         INTEGER,DIMENSION(:)                :: TRACE
+        INTEGER :: AvgDens, THRESH
         INTEGER :: I,INEI,NADJI,NEWNHALO, NEIGH
         INTEGER, DIMENSION(:), POINTER :: ADJI
         INTEGER(8) :: J
         NEWNHALO = 0
+        AvgDens = nint(dble(IPE(N+1)-1_8)/dble(N))
+        THRESH  = AvgDens*10
         DO I=LAST_LVL_START,NHALO
           NADJI = LEN(HALO(I))
+          IF (NADJI.GT.THRESH) CYCLE
           ADJI => IW(IPE(HALO(I)):IPE(HALO(I)+1)-1)
           DO INEI=1,NADJI
             IF (TRACE(ADJI(INEI)) .NE. NODE) THEN
               NEIGH = ADJI(INEI)
+              IF (LEN(NEIGH).GT.THRESH) CYCLE
               TRACE(NEIGH) = NODE
               NEWNHALO = NEWNHALO + 1
               HALO(NHALO+NEWNHALO) = NEIGH

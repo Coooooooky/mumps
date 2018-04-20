@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -69,7 +69,6 @@ C
       INTEGER :: IERR
       DOUBLE PRECISION :: TIME_TMP
       FLAG = .FALSE.
-      TIME_TMP=MPI_WTIME()
       IF ( BLOQ ) THEN
         CALL MPI_PROBE( MPI_ANY_SOURCE, MPI_ANY_TAG,
      &                   COMM, STATUS, IERR )
@@ -78,7 +77,6 @@ C
         CALL MPI_IPROBE( MPI_ANY_SOURCE, MPI_ANY_TAG, COMM,
      &                   FLAG, STATUS, IERR )
       END IF
-      DKEEP(153)=DKEEP(153)+MPI_WTIME()-TIME_TMP
       IF (FLAG) THEN
          KEEP(266)=KEEP(266)-1
          MSGSOU=STATUS(MPI_SOURCE)
@@ -89,10 +87,8 @@ C
            INFO(2) = MSGLEN
            CALL ZMUMPS_BDC_ERROR( MYID, SLAVEF, COMM, KEEP )
          ELSE
-           TIME_TMP=MPI_WTIME()
            CALL MPI_RECV(BUFR, LBUFR_BYTES, MPI_PACKED, MSGSOU,
      &                   MSGTAG, COMM, STATUS, IERR)
-           DKEEP(153)=DKEEP(153)+MPI_WTIME()-TIME_TMP
            CALL ZMUMPS_BACKSLV_TRAITER_MESSAGE( MSGTAG, MSGSOU,
      &                BUFR, LBUFR, LBUFR_BYTES,
      &                MYID, SLAVEF, COMM,
@@ -213,7 +209,6 @@ C
       IF (MSGTAG .EQ. FEUILLE) THEN
           NBFINF = NBFINF - 1
       ELSE IF (MSGTAG .EQ. NOEUD) THEN
-          TIME_TMP=MPI_WTIME()
           POSITION = 0
           CALL MPI_UNPACK(BUFR, LBUFR_BYTES, POSITION,
      &        INODE, 1, MPI_INTEGER,
@@ -269,7 +264,6 @@ C
             POSIWCB = POSIWCB + LONG
             POSWCB = POSWCB + LONG
           ENDIF
-          DKEEP(148)=DKEEP(148)+MPI_WTIME()-TIME_TMP
           POOL_FIRST_POS = IIPOOL
           IF ( KEEP(237).GT. 0 ) THEN
              IF (.NOT.TO_PROCESS(STEP(INODE))) 
@@ -342,15 +336,12 @@ C
         P_UPDATE  = PLEFTW
         P_SOL_MAS = PLEFTW + NPIV * NRHS_B
         PLEFTW    = P_SOL_MAS + NROW_L * NRHS_B
-        TIME_TMP=MPI_WTIME()
         DO K=JBDEB, JBFIN
           CALL MPI_UNPACK( BUFR, LBUFR_BYTES, POSITION,
      &                   W( P_SOL_MAS+(K-JBDEB)*NROW_L),NROW_L,
      &                   MPI_DOUBLE_COMPLEX,
      &                   COMM, IERR )
         ENDDO
-        DKEEP(149)=DKEEP(149)+MPI_WTIME()-TIME_TMP
-        TIME_TMP=MPI_WTIME()
         IF (KEEP(201).EQ.1) THEN 
 #if defined(MUMPS_USE_BLAS2)
           IF ( NRHS_B == 1 ) THEN
@@ -380,7 +371,6 @@ C
           END IF
 #endif
         ENDIF 
-        DKEEP(150)=DKEEP(150)+MPI_WTIME()-TIME_TMP
         IF (KEEP(201).GT.0) THEN
          CALL ZMUMPS_FREE_FACTORS_FOR_SOLVE(INODE,PTRFAC,KEEP(28),
      &          A,LA,.TRUE.,IERR)
@@ -392,7 +382,6 @@ C
         ENDIF
         PLEFTW = PLEFTW - NROW_L * NRHS_B
  100    CONTINUE
-        TIME_TMP=MPI_WTIME()
         CALL ZMUMPS_BUF_SEND_BACKVEC( NRHS_B, INODE, 
      &                               W(P_UPDATE),
      &                               NPIV, NPIV,
@@ -400,11 +389,6 @@ C
      &                                BACKSLV_UPDATERHS,
      &                                JBDEB, JBFIN,
      &                                KEEP, COMM, IERR )
-        IF (IERR.EQ.0) THEN
-          DKEEP(151)=DKEEP(151)+MPI_WTIME()-TIME_TMP
-        ELSE
-          DKEEP(153)=DKEEP(153)+MPI_WTIME()-TIME_TMP
-        ENDIF
         IF ( IERR .EQ. -1 ) THEN
           CALL ZMUMPS_BACKSLV_RECV_AND_TREAT(
      &     .FALSE., FLAG,
@@ -465,7 +449,6 @@ C
              J1 = IPOS + 1
              J2 = IPOS + NPIV
         ENDIF
-        TIME_TMP=MPI_WTIME()
         IPOSINRHSCOMP =  POSINRHSCOMP_BWD(IW(J1)) 
         DO K=JBDEB, JBFIN
           CALL MPI_UNPACK( BUFR, LBUFR_BYTES, POSITION,
@@ -496,7 +479,6 @@ C
           ENDDO
          ENDIF
         ENDDO  
-        DKEEP(152)=DKEEP(152)+MPI_WTIME()-TIME_TMP
         IW(PTRIST(STEP(INODE))+XXS) = 
      &      IW(PTRIST(STEP(INODE))+XXS) - 1
         IF ( IW(PTRIST(STEP(INODE))+XXS).EQ.C_FINI ) THEN
@@ -558,7 +540,6 @@ C
            END IF
            IPOSINRHSCOMP =  POSINRHSCOMP_BWD(IW(J1)) 
            IFR8 = PTRACB(STEP( INODE ))
-           TIME_TMP=MPI_WTIME()
            IF (KEEP(350).EQ.0) THEN
              DO K=JBDEB, JBFIN
                DO JJ = J1, J2
@@ -575,7 +556,6 @@ C
              WRITE(*,*) "Internal error ZMUMPS_BACKSLV_TRAITER_MESSAGE"
              CALL MUMPS_ABORT()
            ENDIF
-           DKEEP(140)=DKEEP(140)+MPI_WTIME()-TIME_TMP
            IFR8 = PTRACB(STEP(INODE))+NPIV-1
            IF ( MTYPE .EQ. 1 .AND. KEEP(50).EQ.0 ) THEN
              J1 = IPOS + LIELL + NPIV + 1
@@ -584,7 +564,6 @@ C
              J1 = IPOS + NPIV + 1
              J2 = IPOS + LIELL
            END IF
-           TIME_TMP=MPI_WTIME()
            IF (KEEP(350).EQ.0) THEN
              DO JJ = J1, J2-KEEP(253)   
                J = IW(JJ)
@@ -608,8 +587,6 @@ C
              WRITE(*,*) "Internal error ZMUMPS_BACKSLV_TRAITER_MESSAGE"
              CALL MUMPS_ABORT()
            ENDIF
-           DKEEP(142)=DKEEP(142)+MPI_WTIME()-TIME_TMP
-       TIME_TMP=MPI_WTIME()
        IF ( KEEP(201).EQ.1 .AND.
      &    (( NELIM .GT. 0 ).OR. (MTYPE.NE.1 )))  THEN
           J = NPIV / PANEL_SIZE  
@@ -842,7 +819,6 @@ C
           END IF
 #endif
  1234     CONTINUE   
-          DKEEP(141)=DKEEP(141)+MPI_WTIME()-TIME_TMP
           IF (KEEP(201).GT.0) THEN
            CALL ZMUMPS_FREE_FACTORS_FOR_SOLVE(INODE,PTRFAC,KEEP(28),
      &          A,LA,.TRUE.,IERR)
@@ -855,7 +831,6 @@ C
           IPOS =   PTRIST(STEP(INODE)) +  KEEP(IXSZ) + 6 + NSLAVES
           IPOSINRHSCOMP     = POSINRHSCOMP_BWD(IW(IPOS))
           IF (KEEP(350).EQ.0) THEN
-            TIME_TMP=MPI_WTIME()
             IPOSINRHSCOMP_TMP = IPOSINRHSCOMP
             DO I = 1, NPIV
               DO K=JBDEB,JBFIN
@@ -869,7 +844,6 @@ C
               ENDDO
               IPOSINRHSCOMP_TMP =  IPOSINRHSCOMP_TMP + 1
             END DO
-            DKEEP(147)=DKEEP(147)+MPI_WTIME()-TIME_TMP
           ELSE IF (KEEP(350).EQ.1.OR.KEEP(350).EQ.2) THEN
           ELSE
             WRITE(*,*)"Internal error in ZMUMPS_BACKSLV_TRAITER_MESSAGE"
@@ -919,7 +893,6 @@ C
      &                   SLAVEF )
               IF ( .NOT. DEJA_SEND( PROCDEST ) ) THEN
  110            CONTINUE
-                TIME_TMP=MPI_WTIME()
                 CALL ZMUMPS_BUF_SEND_VCB( NRHS_B, IN, 0, 0,
      &          LIELL, LIELL-KEEP(253),
      &          IW( POSINDICES ) ,
@@ -927,11 +900,6 @@ C
      &          RHSCOMP(1, 1), NRHS, LRHSCOMP,
      &          IPOSINRHSCOMP, NPIV, KEEP,
      &          PROCDEST, NOEUD, COMM, IERR )
-                IF (IERR.EQ.0) THEN
-                  DKEEP(145)=DKEEP(145)+MPI_WTIME()-TIME_TMP
-                ELSE
-                  DKEEP(153)=DKEEP(153)+MPI_WTIME()-TIME_TMP
-                ENDIF
                 IF ( IERR .EQ. -1 ) THEN
                   CALL ZMUMPS_BACKSLV_RECV_AND_TREAT(
      &            .FALSE., FLAG,

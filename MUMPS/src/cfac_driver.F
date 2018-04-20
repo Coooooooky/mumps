@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -2707,8 +2707,8 @@ C            non recommended setting.
      &                KEEP(487), KEEP(488), KEEP(490),
      &                KEEP(491), KEEP(50), KEEP(486), KEEP(472),
      &                KEEP(475), KEEP(478), KEEP(480), KEEP(481), 
-     &                KEEP(483), KEEP(484), KEEP(485), KEEP(28), 
-     &                id%NPROCS, MPG, PROKG)
+     &                KEEP(483), KEEP(484), KEEP(485), KEEP(467), 
+     &                KEEP(28), id%NPROCS, MPG, PROKG)
 C           flops when BLR activated
             RINFOG(14) = id%DKEEP(56)
           ELSE

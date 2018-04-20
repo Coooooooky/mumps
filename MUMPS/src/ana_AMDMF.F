@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -41,6 +41,7 @@ C
      &        ILAST, INEXT, J, JLAST, JNEXT, K, KNT1, KNT2, KNT3,
      &        LENJ, LN, ME, MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X
+      INTEGER KNT1_UPDATED, KNT2_UPDATED
       INTEGER(8) MAXMEM, MEM, NEWMEM
       INTEGER :: MAXINT_N
       INTEGER(8) :: HASH, HMOD 
@@ -374,7 +375,9 @@ C
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
               E = ME
               PJ = P
@@ -385,17 +388,21 @@ C
               PJ = PE (E)
               LN = LEN (E)
             ENDIF
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
               IF (NVI .GT. 0) THEN
                 IF (PFREE .GT. IWLEN) THEN
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+                  KNT1_UPDATED = 0
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0_8
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+                  KNT2_UPDATED = 0
                   IF (LEN (E) .EQ. 0) PE (E) = 0_8
                   NCMPA = NCMPA + 1
                   DO 70 J = 1, N
@@ -729,6 +736,6 @@ C
       IF (.NOT.SchurON) THEN
         IF (PERMeqN.GT.0) PERM(PERMeqN) = N
       ENDIF
-      pfree = maxmem
+      PFREE = MAXMEM
       RETURN
       END SUBROUTINE MUMPS_SYMQAMD_NEW

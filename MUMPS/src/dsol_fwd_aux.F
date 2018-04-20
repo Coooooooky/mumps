@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -72,7 +72,6 @@ C
          NBFIN = NBFIN - 1
          IF ( NBFIN .eq. 0 ) GOTO 270
       ELSE  IF (MSGTAG .EQ. ContVec ) THEN
-         TIME_TMP = MPI_WTIME()
          POSITION = 0
          CALL MPI_UNPACK( BUFR, LBUFR_BYTES, POSITION,
      &        FINODE, 1, MPI_INTEGER, COMM, IERR )
@@ -150,9 +149,7 @@ C
                 END IF
              ENDIF
           END IF
-          DKEEP(128)=DKEEP(128)+MPI_WTIME()-TIME_TMP
        ELSEIF ( MSGTAG .EQ. Master2Slave ) THEN
-          TIME_TMP=MPI_WTIME()
           POSITION = 0
           CALL MPI_UNPACK( BUFR, LBUFR_BYTES, POSITION,
      &         FINODE, 1, MPI_INTEGER, COMM, IERR )
@@ -187,7 +184,6 @@ C
      &               MPI_DOUBLE_PRECISION, COMM, IERR )
              END DO
           END IF
-          DKEEP(129)=DKEEP(129)+MPI_WTIME()-TIME_TMP
           IF (KEEP(201).GT.0) THEN
              CALL DMUMPS_SOLVE_GET_OOC_NODE(
      &            FINODE,PTRFAC,KEEP,A,LA,STEP,
@@ -199,7 +195,6 @@ C
              ENDIF
           ENDIF
           APOS = PTRFAC(STEP(FINODE))
-          TIME_TMP=MPI_WTIME()
           IF (KEEP(201).EQ.1) THEN
 #if defined(MUMPS_USE_BLAS2)
              IF ( NRHS_B == 1 ) THEN
@@ -231,7 +226,6 @@ C
              ENDIF
 #endif
           ENDIF
-          DKEEP(130)=DKEEP(130)+MPI_WTIME()-TIME_TMP
           IF (KEEP(201).GT.0) THEN
              CALL DMUMPS_FREE_FACTORS_FOR_SOLVE(FINODE,PTRFAC,
      &            KEEP(28),A,LA,.TRUE.,IERR)
@@ -245,7 +239,6 @@ C
           PDEST = MUMPS_PROCNODE( PROCNODE_STEPS(STEP(FPERE)),
      &                            SLAVEF )
           IF ( PDEST .EQ. MYID ) THEN
-             TIME_TMP=MPI_WTIME()
              IF ( PTRICB(STEP(FINODE)) .EQ. 0 ) THEN
                 NCB = IW( PTRIST(STEP(FINODE)) + 2 + KEEP(IXSZ) )
                 PTRICB(STEP(FINODE)) = NCB + 1
@@ -291,7 +284,6 @@ C
                   WRITE(*,*) "UNKNOWN VERSION OF KEEP(350)"
                   CALL MUMPS_ABORT()
               ENDIF
-             DKEEP(131)=DKEEP(131)+MPI_WTIME()-TIME_TMP
              PTRICB(STEP(FINODE)) =
      &            PTRICB(STEP(FINODE)) - NCV
              IF ( PTRICB( STEP( FINODE ) ) == 1 ) THEN
@@ -307,18 +299,12 @@ C
              ENDIF
           ELSE
  210         CONTINUE
-             TIME_TMP=MPI_WTIME()
              CALL DMUMPS_BUF_SEND_VCB( NRHS_B, FINODE, FPERE,
      &            IW(PTRIST(STEP( FINODE )) + 2 + KEEP(IXSZ) ), NCV,NCV,
      &            IW(PTRIST(STEP(FINODE))+4+ KEEP(IXSZ) ),
      &            WCB( PTRY ), JBDEB, JBFIN,
      &            RHSCOMP, 1, 1, -9999, -9999,
      &            KEEP, PDEST, ContVec, COMM, IERR )
-             IF (IERR.EQ.0) THEN
-               DKEEP(132)=DKEEP(132)+MPI_WTIME()-TIME_TMP
-             ELSE
-               DKEEP(134)=DKEEP(134)+MPI_WTIME()-TIME_TMP
-             ENDIF
              IF ( IERR .EQ. -1 ) THEN
                 CALL DMUMPS_SOLVE_RECV_AND_TREAT( .FALSE., FLAG,
      &               BUFR, LBUFR, LBUFR_BYTES,
@@ -630,7 +616,6 @@ C
          LD_WCBCB  = NCB
          PCB_COURANT = PPIV_COURANT + NPIV*NRHS_B
          IFR8 = PPIV_COURANT - 1_8
-         TIME_TMP=MPI_WTIME()
          IFR_ini8 = IFR8
          IPOSINRHSCOMP = POSINRHSCOMP_FWD(IW(J1)) 
          IF (KEEP(350).EQ.0) THEN
@@ -671,11 +656,9 @@ C
              WRITE(*,*) "UNKNOWN VERSION OF KEEP(350)"
              CALL MUMPS_ABORT()
          ENDIF
-         DKEEP(123)=DKEEP(123)+MPI_WTIME()-TIME_TMP
          IFR8 = PCB_COURANT - 1_8
          IF (NPIV .LT. LIELL) THEN
             IFR_ini8 = IFR8
-            TIME_TMP=MPI_WTIME()
             IF (KEEP(350).EQ.0) THEN
 !$OMP PARALLEL DO PRIVATE(J,IFR8,K,IPOSINRHSCOMP) IF(OMP_FLAG)
             DO 140 JJ = J3 + 1, J2
@@ -722,10 +705,8 @@ C
              WRITE(*,*) "UNKNOWN VERSION OF KEEP(350)"
              CALL MUMPS_ABORT()
            ENDIF
-         DKEEP(124)=DKEEP(124)+MPI_WTIME()-TIME_TMP
          ENDIF
       ENDIF                     
-      TIME_TMP=MPI_WTIME()  
       IF ( NPIV .NE. 0 ) THEN
          IF (KEEP(201).EQ.1) THEN 
         APOSDEB = APOS
@@ -904,8 +885,6 @@ C
             END IF
          END IF
       END IF                    
-      DKEEP(125)=DKEEP(125)+MPI_WTIME()-TIME_TMP
-      TIME_TMP=MPI_WTIME()
       IPOSINRHSCOMP =  POSINRHSCOMP_FWD(IW(J1)) 
       IF ( KEEP(50) .eq. 0 ) THEN
          IF (KEEP(350).EQ.0) THEN
@@ -1116,7 +1095,6 @@ C
              CALL MUMPS_ABORT()
          ENDIF
       END IF
-      DKEEP(126)=DKEEP(126)+MPI_WTIME()-TIME_TMP
       IF (KEEP(201).GT.0) THEN
          CALL DMUMPS_FREE_FACTORS_FOR_SOLVE(INODE,PTRFAC,KEEP(28),
      &        A,LA,.TRUE.,IERR)
@@ -1146,7 +1124,6 @@ C
              PTRICB(STEP(INODE)) = NCB + 1
              IF (KEEP(350).EQ.0) THEN
 !$             OMP_FLAG = .FALSE. 
-               TIME_TMP=MPI_WTIME()
 !$OMP PARALLEL DO PRIVATE(K,IPOSINRHSCOMP_TMP) IF(OMP_FLAG)
                DO 190 I = 1, NUPDATE
                   IPOSINRHSCOMP_TMP = 
@@ -1187,7 +1164,6 @@ C
              WRITE(*,*) "UNKNOWN VERSION OF KEEP(350)"
              CALL MUMPS_ABORT()
          ENDIF
-               DKEEP(127)=DKEEP(127)+MPI_WTIME()-TIME_TMP
                PTRICB(STEP( INODE )) = PTRICB(STEP( INODE )) - NUPDATE
                IF ( PTRICB(STEP(INODE)) == 1 ) THEN
                   NSTK_S(STEP(FPERE)) = NSTK_S(STEP(FPERE)) - 1
@@ -1206,7 +1182,6 @@ C
             ENDIF
          ELSE
  210        CONTINUE
-            TIME_TMP=MPI_WTIME()
             CALL DMUMPS_BUF_SEND_VCB( NRHS_B, INODE, FPERE, 
      &           NCB, LD_WCBCB,
      &           NUPDATE,
@@ -1216,11 +1191,6 @@ C
      &           MUMPS_PROCNODE(PROCNODE_STEPS(STEP(FPERE)), SLAVEF),
      &           ContVec,
      &           COMM, IERR )
-            IF (IERR.EQ.0) THEN
-              DKEEP(132)=DKEEP(132)+MPI_WTIME()-TIME_TMP
-            ELSE
-              DKEEP(134)=DKEEP(134)+MPI_WTIME()-TIME_TMP
-            ENDIF
             IF ( IERR .EQ. -1 ) THEN
                CALL DMUMPS_SOLVE_RECV_AND_TREAT( .FALSE., FLAG,
      &              BUFR, LBUFR, LBUFR_BYTES,
@@ -1259,7 +1229,6 @@ C
      &           NSLAVES, 
      &           Effective_CB_Size, FirstIndex )
  222        CONTINUE
-                 TIME_TMP=MPI_WTIME()
                  CALL DMUMPS_BUF_SEND_MASTER2SLAVE( NRHS_B,
      &           INODE, FPERE,
      &           Effective_CB_Size, LD_WCBCB, LD_WCBPIV, NPIV,
@@ -1267,11 +1236,6 @@ C
      &           WCB( PCB_COURANT + NELIM + FirstIndex - 1 ),
      &           WCB( PPIV_COURANT ),
      &           PDEST, COMM, KEEP, IERR )
-                 IF (IERR.EQ.0) THEN
-                   DKEEP(133)=DKEEP(133)+MPI_WTIME()-TIME_TMP
-                 ELSE
-                   DKEEP(134)=DKEEP(134)+MPI_WTIME()-TIME_TMP
-                 ENDIF
             IF ( IERR .EQ. -1 ) THEN
                CALL DMUMPS_SOLVE_RECV_AND_TREAT( .FALSE., FLAG,
      &              BUFR, LBUFR, LBUFR_BYTES,
@@ -1352,7 +1316,6 @@ C
       INTEGER :: STATUS(MPI_STATUS_SIZE)
       INTEGER MSGSOU, MSGTAG, MSGLEN
       DOUBLE PRECISION :: TIME_TMP
-      TIME_TMP=MPI_WTIME()
       FLAG = .FALSE.
       IF ( BLOQ ) THEN
         CALL MPI_PROBE( MPI_ANY_SOURCE, MPI_ANY_TAG,
@@ -1362,7 +1325,6 @@ C
         CALL MPI_IPROBE( MPI_ANY_SOURCE, MPI_ANY_TAG, COMM,
      &                   FLAG, STATUS, IERR )
       END IF
-      DKEEP(134)=DKEEP(134)+MPI_WTIME()-TIME_TMP
       IF ( FLAG ) THEN
          KEEP(266) = KEEP(266) -1
          MSGSOU = STATUS( MPI_SOURCE )
@@ -1373,10 +1335,8 @@ C
            INFO(2) = MSGLEN
            CALL DMUMPS_BDC_ERROR( MYID, SLAVEF, COMM, KEEP )
          ELSE
-           TIME_TMP=MPI_WTIME()
            CALL MPI_RECV( BUFR, LBUFR_BYTES, MPI_PACKED,
      &                  MSGSOU, MSGTAG, COMM, STATUS, IERR )
-           DKEEP(134)=DKEEP(134)+MPI_WTIME()-TIME_TMP
            CALL DMUMPS_TRAITER_MESSAGE_SOLVE( BUFR, LBUFR, LBUFR_BYTES,
      &          MSGTAG, MSGSOU, MYID, SLAVEF, COMM,
      &          N, NRHS, IPOOL, LPOOL, III, LEAF,

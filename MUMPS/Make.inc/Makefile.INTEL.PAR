@@ -1,7 +1,6 @@
-#!/usr/bin/env make
 #
-#  This file is part of MUMPS 5.1.1, released
-#  on Mon Mar 20 14:34:33 UTC 2017
+#  This file is part of MUMPS 5.1.2, released
+#  on Mon Oct  2 07:37:01 UTC 2017
 #
 #Begin orderings
 
@@ -64,40 +63,41 @@ IORDERINGSC = $(IMETIS) $(IPORD) $(ISCOTCH)
 #End orderings
 ########################################################################
 ################################################################################
-# You could alternatively have "source compilervars.sh" in your .bashrc
-CMPDIR=$(MKLROOT)/../mpi/bin64
+
 PLAT    =
 LIBEXT  = .a
 OUTC    = -o 
 OUTF    = -o 
-CC = $(CMPDIR)/mpiicc
-FC = $(CMPDIR)/mpiifort
-FL = $(CMPDIR)/mpiifort
+RM = /bin/rm -f
+CC = mpiicc
+FC = mpiifort
+FL = mpiifort
 AR = ar vr 
 #RANLIB = ranlib
 RANLIB  = echo
 # Make this variable point to the path where the Intel MKL library is
 # installed. It is set to the default install directory for Intel MKL.
-MKLDIR=${MKLROOT}/lib/intel64
-LAPACK = -L$(MKLDIR) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core
-SCALAP = -L$(MKLDIR) -lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64
+MKLROOT=/opt/intel/mkl/lib/intel64
+LAPACK = -L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core
+SCALAP = -L$(MKLROOT) -lmkl_scalapack_lp64 -lmkl_blacs_intelmpi_lp64
 
 LIBPAR = $(SCALAP) $(LAPACK)
 
 INCSEQ = -I$(topdir)/libseq
 LIBSEQ  = $(LAPACK) -L$(topdir)/libseq -lmpiseq
 
-LIBBLAS = -L$(MKLDIR) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core 
+LIBBLAS = -L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core 
 LIBOTHERS = -lpthread
 
 #Preprocessor defs for calling Fortran from C (-DAdd_ or -DAdd__ or -DUPPER)
 CDEFS   = -DAdd_
 
 #Begin Optimized options
-OPTF    = -O -nofor-main -qopenmp 
-OPTL    = -O -nofor-main -qopenmp
+OPTF    = -O -nofor_main -DBLR_MT -qopenmp # or -openmp for old compilers
+OPTL    = -O -nofor_main -qopenmp
 OPTC    = -O -qopenmp
 #End Optimized options
+ 
 INCS = $(INCPAR)
 LIBS = $(LIBPAR)
 LIBSEQNEEDED =

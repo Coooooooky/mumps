@@ -1,7 +1,7 @@
 This version of MUMPS has been developed by employees of CERFACS, ENS Lyon,
 INPT(ENSEEIHT)-IRIT, Inria and University of Bordeaux: Emmanuel Agullo,
-Patrick Amestoy, Maurice Bremond, Alfredo Buttari, Philippe Combes, Aurelia
-Fevre, Abdou Guermouche, Guillaume Joslin, Jacko Koster, Jean-Yves L'Excellent,
+Patrick Amestoy, Maurice Bremond, Alfredo Buttari, Philippe Combes, Marie Durand,
+Aurelia Fevre, Abdou Guermouche, Guillaume Joslin, Jacko Koster, Jean-Yves L'Excellent,
 Stephane Pralet, Chiara Puglisi, Francois-Henry Rouet, Wissam Sid-Lakhdar,
 Tzvetomila Slavova, Bora Ucar and Clement Weisbecker.
 
@@ -14,11 +14,10 @@ at the University of Paderborn. We thank Eddy Caron for the administration of a
 server used on a daily basis for MUMPS.
 
 We want to thank the French ANR programme, the European community, Altair, 
-EADS-IW, EDF, EMGS, ESI Group, FFT, LSTC, Michelin, SAMTECH (now Siemens), Total 
-for their support. 
-We also thank the Lawrence Berkeley National Laboratory, PARALLAB (Bergen)
-and Rutherford Appleton Laboratory for research discussions that have certainly
-influenced this work. 
+Airbus Group-IW, EDF, EMGS, ESI Group, FFT, LBNL, LSTC, Michelin, SAFRAN,
+SAMTECH, Siemens, Total for their support. We also thank LBNL, LSTC, PARALLAB
+and the Rutherford Appleton Laboratory for research discussions that have
+certainly influenced this work. 
 
 Finally we want to thank the institutions that have provided access to their
 parallel machines: Centre Informatique National de l'Enseignement Superieur

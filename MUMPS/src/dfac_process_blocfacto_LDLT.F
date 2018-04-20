@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -411,13 +411,17 @@ C
      &    IW(IOLDPS+6+XTRA_SLAVES_SYM+KEEP(IXSZ):
      &     IOLDPS+5+XTRA_SLAVES_SYM+KEEP(IXSZ)+NSLAVES_FOLLOW)
         END IF
-          CALL SYSTEM_CLOCK(T1)
+          IF (KEEP(486) .GT. 0) THEN
+            CALL SYSTEM_CLOCK(T1)
+          ENDIF
           CALL dtrsm( 'L', 'U', 'T', 'U', NPIV, NROW1, ONE,
      &               A( POSBLOCFACTO ), LD_BLOCFACTO,
      &               A(POSELT+int(NPIV1,8)), NCOL1 )
-          CALL SYSTEM_CLOCK(T2,COUNT_RATE)
-          ACC_TRSM_TIME = ACC_TRSM_TIME + 
+          IF (KEEP(486) .GT. 0) THEN
+            CALL SYSTEM_CLOCK(T2,COUNT_RATE)
+            ACC_TRSM_TIME = ACC_TRSM_TIME + 
      &            DBLE(T2-T1)/DBLE(COUNT_RATE)
+          ENDIF
         IF (.NOT.SEND_LR) THEN
          LPOS = POSELT + int(NPIV1,8)
          UPOS = 1_8
@@ -834,13 +838,15 @@ C
       ENDIF
       IOLDPS = PTRIST(STEP(INODE))
       IF (LASTBL) THEN
-         IF (SEND_LR) THEN
-           CALL STATS_COMPUTE_FLOP_SLAVE_TYPE2(NROW1, NCOL1, NASS1,
+        IF (KEEP(486).NE.0) THEN
+          IF (SEND_LR) THEN
+            CALL STATS_COMPUTE_FLOP_SLAVE_TYPE2(NROW1, NCOL1, NASS1,
      &             KEEP(50), INODE)
-         ELSE
-           CALL UPD_FLOP_FRFRONT_SLAVE(NROW1, NCOL1, NASS1,
+          ELSE
+            CALL UPD_FLOP_FRFRONT_SLAVE(NROW1, NCOL1, NASS1,
      &             KEEP(50), INODE)
-         ENDIF
+          ENDIF
+        ENDIF
          IF ( IW(IOLDPS+6+KEEP(IXSZ)).EQ.
      &     huge(IW(IOLDPS+6+KEEP(IXSZ))) ) THEN
            IW(IOLDPS+6+KEEP(IXSZ)) =  1

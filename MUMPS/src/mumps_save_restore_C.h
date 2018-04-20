@@ -1,7 +1,7 @@
 /*
  *
- *  This file is part of MUMPS 5.1.1, released
- *  on Mon Mar 20 14:34:33 UTC 2017
+ *  This file is part of MUMPS 5.1.2, released
+ *  on Mon Oct  2 07:37:01 UTC 2017
  *
  *
  *  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -12,7 +12,7 @@
  *  http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
  *
  */
-#ifndef MUMPS_SAVE_RESTORE_H
+#ifndef MUMPS_SAVE_RESTORE_C_H
 #define MUMPS_SAVE_RESTORE_C_H
 #include "mumps_common.h"
 #define MUMPS_SAVE_RESTORE_RETURN_C \

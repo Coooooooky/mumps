@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -796,11 +796,7 @@ C
       IF (KEEP(210).EQ.0.AND.KEEP(201).EQ.0) KEEP(210)=2 
       IF (KEEP(210).EQ.2) KEEP8(79)=huge(KEEP8(79))
       IF (KEEP(210).EQ.1.AND.KEEP8(79).LE.0_8) THEN
-         IF ( huge(KEEP8(79)) / K79REF + 1_8 .GE. int(NSLAVES,8) ) THEN
-            KEEP8(79)=huge(KEEP8(79))
-         ELSE
-            KEEP8(79)=K79REF * int(NSLAVES,8)
-         ENDIF
+        KEEP8(79)=K79REF * int(NSLAVES,8)
       ENDIF
       IF ( (KEEP(79).EQ.0).OR.(KEEP(79).EQ.2).OR.
      &     (KEEP(79).EQ.3).OR.(KEEP(79).EQ.5).OR.
@@ -809,15 +805,15 @@ C
        IF (KEEP(210).EQ.1) THEN
         SPLITROOT = .FALSE. 
         IF ( KEEP(62).GE.1) THEN
-         CALL ZMUMPS_CUTNODES(N, FRERE, FILS, NFSIZ,INFO(6),
+          CALL ZMUMPS_CUTNODES(N, FRERE, FILS, NFSIZ,INFO(6),
      &                       NSLAVES, KEEP,KEEP8, SPLITROOT,
      &                       MP, LDIAG, INFO(1), INFO(2))
-         IF (INFO(1).LT.0) GOTO 90 
-             IF (PROK) THEN
+          IF (INFO(1).LT.0) GOTO 90 
+          IF (PROK) THEN
                WRITE(MP,*) " Number of split nodes in pre-splitting=",
      &         KEEP(61)
-             ENDIF
           ENDIF
+        ENDIF
        ENDIF
       ENDIF
       SPLITROOT = ((ICNTL(13).GT.0 .AND. NSLAVES.GT.ICNTL(13)) .OR.

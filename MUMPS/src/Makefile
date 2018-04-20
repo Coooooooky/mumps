@@ -1,6 +1,6 @@
 #
-#  This file is part of MUMPS 5.1.1, released
-#  on Mon Mar 20 14:34:33 UTC 2017
+#  This file is part of MUMPS 5.1.2, released
+#  on Mon Oct  2 07:37:01 UTC 2017
 #
 #
 #  This file is part of MUMPS 5.0beta, built on Tue Jan 10 16:43:31 UTC 2012
@@ -169,10 +169,11 @@ OBJS_OTHER = \
 
 $(libdir)/libmumps_common$(PLAT)$(LIBEXT):      $(OBJS_COMMON_MOD) $(OBJS_COMMON_OTHER)
 	$(AR)$@ $?
+	$(RANLIB) $@
 
 $(libdir)/lib$(ARITH)mumps$(PLAT)$(LIBEXT):    $(OBJS_MOD) $(OBJS_OTHER)
 	$(AR)$@ $?
-
+	$(RANLIB) $@
 
 # Dependencies between modules:
 $(ARITH)mumps_load.o:		$(ARITH)mumps_comm_buffer.o \

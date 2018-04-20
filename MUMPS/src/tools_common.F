@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -266,7 +266,11 @@ C
       INTEGER MYID, COMM, IRANK, INFO, INFOG(2)
       INCLUDE 'mpif.h'
       INTEGER IERR_MPI, MASTER
-      INTEGER TEMP1(2), TEMP2(2)
+#if defined(WORKAROUNDINTELILP64MPI2INTEGER)
+      INTEGER(4) :: TEMP1(2),TEMP2(2)
+#else
+      INTEGER :: TEMP1(2),TEMP2(2)
+#endif
       PARAMETER( MASTER = 0 )
       CALL MPI_REDUCE( INFO, INFOG(1), 1, MPI_INTEGER,
      &                 MPI_MAX, MASTER, COMM, IERR_MPI )

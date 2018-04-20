@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -272,7 +272,6 @@ C
       INTEGER,    INTENT(IN)    :: LP
       LOGICAL,    INTENT(IN)    :: LPOK
       INTEGER, DIMENSION(:), ALLOCATABLE :: IPE
-      INTEGER :: LIW8_EFF
       INTEGER :: allocok
       IF (IWFR8 .GE. int(huge(IW),8)) THEN
         INFO(1) = -51

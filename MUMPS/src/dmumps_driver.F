@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -703,7 +703,7 @@ C          Print basic information on MUMPS call
            IF (JOB .EQ. -2
      &       ) THEN
 C            N, NELT, NNZ not meaningful
-             WRITE(MPG,'(A,A,A,A,I4,I12)') 
+             WRITE(MPG,'(/A,A,A,A,I4,I12)') 
      &               'Entering DMUMPS ',
      &               trim(adjustl(id%VERSION_NUMBER)),
      &               trim(FROM_C_INTERFACE_STRING),
@@ -712,13 +712,13 @@ C            N, NELT, NNZ not meaningful
 C            Assembled format
              IF (id%ICNTL(18) .EQ. 0
      &            ) THEN
-                 WRITE(MPG,'(A,A,A,A,I4,I12,I15)') 
+                 WRITE(MPG,'(/A,A,A,A,I4,I12,I15)') 
      &                 'Entering DMUMPS ',
      &                 trim(adjustl(id%VERSION_NUMBER)),
      &                 trim(FROM_C_INTERFACE_STRING),
      &                 ' with JOB, N, NNZ =', JOB,id%N,id%KEEP8(28)
              ELSE
-                 WRITE(MPG,'(A,A,A,A,I4,I12)') 
+                 WRITE(MPG,'(/A,A,A,A,I4,I12)') 
      &                 'Entering DMUMPS ',
      &                 trim(adjustl(id%VERSION_NUMBER)),
      &                 trim(FROM_C_INTERFACE_STRING),
@@ -726,7 +726,7 @@ C            Assembled format
              ENDIF
            ELSE
 C            Elemental format
-             WRITE(MPG,'(A,A,A,A,I4,I12,I15)') 
+             WRITE(MPG,'(/A,A,A,A,I4,I12,I15)') 
      &                'Entering DMUMPS ',
      &                trim(adjustl(id%VERSION_NUMBER)),
      &                trim(FROM_C_INTERFACE_STRING),
@@ -745,6 +745,9 @@ C          MPI and OpenMP information
              WRITE(MPG, '(A,I6,A)')    '      executing #MPI = ',
      &                 id%NPROCS, ', without OMP'
 !$         ENDIF
+          IF (JOB.GE.1 .AND. JOB.LE.6) THEN
+            WRITE(MPG, '(A)')
+          ENDIF
         ENDIF
       END IF
 C

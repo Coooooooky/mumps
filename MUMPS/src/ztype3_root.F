@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -780,8 +780,10 @@ C
         ENDIF
       ELSE IF ( SLAVE ) THEN
         IF ( root%gridinit_done) THEN
-           CALL blacs_gridexit( root%CNTXT_BLACS )
-           root%gridinit_done = .FALSE.
+           IF (root%yes) THEN
+             CALL blacs_gridexit( root%CNTXT_BLACS )
+             root%gridinit_done = .FALSE.
+           ENDIF
         END IF
         root%CNTXT_BLACS = COMM_ROOT
         CALL blacs_gridinit( root%CNTXT_BLACS, 'R',

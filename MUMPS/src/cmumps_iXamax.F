@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -13,7 +13,8 @@ C
       INTEGER FUNCTION CMUMPS_IXAMAX(N,X,INCX)
       COMPLEX X(*)
       REAL ABSMAX
-      INTEGER I,IX
+      INTEGER :: I
+      INTEGER(8) :: IX
       INTEGER INCX,N
       CMUMPS_IXAMAX = 0
       IF ( N.LT.1 ) RETURN

@@ -7,8 +7,6 @@
 # RANLIB must be passed to make.
 #
 
-LIBEXT=.a
-
 INCLUDES = -I../include
 
 COPTIONS = $(INCLUDES) $(CFLAGS) $(OPTFLAGS)
@@ -24,13 +22,14 @@ OBJS = graph.o gbipart.o gbisect.o ddcreate.o ddbisect.o nestdiss.o \
 # OUTC = -o
 
 .c.o:
-	$(CC) $(COPTIONS) -c $*.c -o $(OUTC)$*.o
+	$(CC) $(COPTIONS) -c $*.c $(OUTC)$*.o
 
-libpord$(LIBEXT): $(OBJS)
-	$(AR) $(ARFLAGS) $@ $^
+libpord$(LIBEXT):$(OBJS)
+	$(AR)$@ $(OBJS)
+	$(RANLIB) $@
 
 clean:
-	$(RM) *.o
+	rm -f *.o
 
 realclean:
-	$(RM) *.o libpord.a
+	rm -f *.o libpord.a

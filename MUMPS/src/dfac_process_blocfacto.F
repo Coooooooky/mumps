@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -366,7 +366,9 @@ C
         ENDIF
         LPOS2 = POSELT + int(NPIV1,8)
         LPOS  = LPOS2 + int(NPIV,8)
-        CALL SYSTEM_CLOCK(T1)
+        IF (KEEP(486) .GT.0) THEN
+          CALL SYSTEM_CLOCK(T1)
+        ENDIF
         IF (DYNAMIC_ALLOC) THEN
           CALL dtrsm('L','L','N','N',NPIV, NROW1, ONE, 
      &           DYN_BLOCFACTO, LD_BLOCFACTO, A(LPOS2), NCOL1)
@@ -374,9 +376,11 @@ C
           CALL dtrsm('L','L','N','N',NPIV, NROW1, ONE, 
      &           A(POSBLOCFACTO), LD_BLOCFACTO, A(LPOS2), NCOL1)
         ENDIF
-        CALL SYSTEM_CLOCK(T2,COUNT_RATE)
-        ACC_TRSM_TIME = ACC_TRSM_TIME + 
+        IF (KEEP(486) .GT.0) THEN
+          CALL SYSTEM_CLOCK(T2,COUNT_RATE)
+          ACC_TRSM_TIME = ACC_TRSM_TIME + 
      &            DBLE(T2-T1)/DBLE(COUNT_RATE)
+        ENDIF
       ENDIF 
       IF ( (NPIV .GT. 0)
      &   ) THEN
@@ -583,13 +587,15 @@ C
      &        dble(NROW1*(NPIV1+NPIV))*dble(2*NCOL1-NPIV1-NPIV-1)
       CALL DMUMPS_LOAD_UPDATE( 1, .FALSE., FLOP1, KEEP,KEEP8 )
       IF (LASTBL) THEN
-       IF (SEND_LR) THEN
-         CALL STATS_COMPUTE_FLOP_SLAVE_TYPE2(NROW1, NCOL1, NASS1,
+        IF (KEEP(486).NE.0) THEN
+          IF (SEND_LR) THEN
+            CALL STATS_COMPUTE_FLOP_SLAVE_TYPE2(NROW1, NCOL1, NASS1,
      &              KEEP(50), INODE)
-       ELSE
-         CALL UPD_FLOP_FRFRONT_SLAVE(NROW1, NCOL1, NASS1,
+          ELSE
+            CALL UPD_FLOP_FRFRONT_SLAVE(NROW1, NCOL1, NASS1,
      &              KEEP(50), INODE)
-       ENDIF
+          ENDIF
+        ENDIF
        IF (SEND_LR) THEN
          IF (KEEP(489) .EQ. 1) THEN
            CALL DMUMPS_FAKE_COMPRESS_CB(A, LA, POSELT, NCOL1,

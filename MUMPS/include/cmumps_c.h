@@ -1,7 +1,7 @@
 /*
  *
- *  This file is part of MUMPS 5.1.1, released
- *  on Mon Mar 20 14:34:33 UTC 2017
+ *  This file is part of MUMPS 5.1.2, released
+ *  on Mon Oct  2 07:37:01 UTC 2017
  *
  *
  *  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -28,7 +28,7 @@ extern "C" {
 
 #ifndef MUMPS_VERSION
 /* Protected in case headers of other arithmetics are included */
-#define MUMPS_VERSION "5.1.1"
+#define MUMPS_VERSION "5.1.2"
 #endif
 #ifndef MUMPS_VERSION_MAX_LEN
 #define MUMPS_VERSION_MAX_LEN 30

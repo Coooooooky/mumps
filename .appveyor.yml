@@ -1,0 +1,42 @@
+image:
+#- Visual Studio 2017
+- Ubuntu
+
+environment:
+  MINGW_DIR: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64\bin
+  TRAVIS: 1
+
+clone_depth: 3
+
+before_build:
+- cmd: set PATH=%MINGW_DIR%;%PATH%
+# fix CMake sh.exe issue, by removing Git path.
+- cmd: set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+- cmd: set FC=%MINGW_DIR%\gfortran 
+- cmd: mklink bin\make.exe %MINGW_DIR%\mingw32-make.exe
+
+#- sh: sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" > /dev/null
+#- sh: sudo apt-get -yq update > /dev/null
+- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends gfortran cmake make liblapack-dev > /dev/null
+- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends libmetis-dev libparmetis-dev libscotch-dev libptscotch-dev libatlas-base-dev openmpi-bin libopenmpi-dev  > /dev/null
+- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends libmumps-dev > /dev/null
+- sh: export FC=/usr/bin/gfortran
+
+build_script:
+# Lapack95
+- cd $APPVEYOR_BUILD_FOLDER/LAPACK95
+- make -s double -C SRC
+
+# MUMPS
+- sh: cd $APPVEYOR_BUILD_FOLDER/MUMPS
+- sh: make -s d
+  
+after_build:
+- cd $APPVEYOR_BUILD_FOLDER/tests/bin
+- cmd: cmake -G "MinGW Makefiles" -DLAPACK95_ROOT=$APPVEYOR_BUILD_FOLDER/LAPACK95 ..
+- sh: cmake -DLAPACK95_ROOT=$APPVEYOR_BUILD_FOLDER/LAPACK95 ..
+- make
+- make test
+
+on_failure:
+- ctest -V

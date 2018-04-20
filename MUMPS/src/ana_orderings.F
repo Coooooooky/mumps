@@ -400,6 +400,7 @@ C-----------------------------------------------------------------------
      &        ILAST, INEXT, J, JLAST, JNEXT, K, KNT1, KNT2, KNT3,
      &        LENJ, LN,  ME,  MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X
+      INTEGER KNT1_UPDATED, KNT2_UPDATED
       INTEGER(8) :: MAXMEM, MEM, NEWMEM
       INTEGER    :: MAXINT_N
       INTEGER(8) :: HASH, HMOD
@@ -598,7 +599,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -617,7 +620,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -631,11 +636,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0
                   NCMPA = NCMPA + 1
@@ -1450,6 +1461,7 @@ C-----------------------------------------------------------------------
      &        LENJ, LN, ME, MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X, 
      &        NPRINC
+      INTEGER KNT1_UPDATED, KNT2_UPDATED
       INTEGER(8) :: MAXMEM, MEM, NEWMEM
       INTEGER    :: MAXINT_N
       INTEGER(8) :: HASH, HMOD
@@ -1690,7 +1702,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -1709,7 +1723,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -1723,11 +1739,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0_8
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0_8
                   NCMPA = NCMPA + 1
@@ -2696,6 +2718,7 @@ C-----------------------------------------------------------------------
      &        LENJ, LN, ME, MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X,
      &        NBFLAG, NREAL, LASTD, NELME
+      INTEGER KNT1_UPDATED, KNT2_UPDATED
       INTEGER(8) ::  MAXMEM, MEM, NEWMEM
       INTEGER    :: MAXINT_N
       INTEGER(8) :: HASH, HMOD
@@ -2964,7 +2987,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -2983,7 +3008,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -2997,11 +3024,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0_8
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0
                   NCMPA = NCMPA + 1
@@ -4004,6 +4037,7 @@ C-----------------------------------------------------------------------
      &        LENJ, LN, ME, MINDEG, NEL,
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X,
      &        NBFLAG, NREAL, LASTD, NELME, WF3, WF4, N2, PAS
+       INTEGER KNT1_UPDATED, KNT2_UPDATED
        INTEGER(8) :: MAXMEM, MEM, NEWMEM
        INTEGER    :: MAXINT_N
        INTEGER(8) :: HASH, HMOD
@@ -4373,7 +4407,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -4392,7 +4428,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -4406,11 +4444,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0_8
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0_8
                   NCMPA = NCMPA + 1
@@ -5415,6 +5459,7 @@ C-----------------------------------------------------------------------
      &        ILAST, INEXT, J, JLAST, JNEXT, K, KNT1, KNT2, KNT3,
      &        LENJ, LN, ME, MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X
+      INTEGER KNT1_UPDATED, KNT2_UPDATED
       INTEGER(8) MAXMEM, MEM, NEWMEM
       INTEGER   :: MAXINT_N
       INTEGER(8):: HASH, HMOD
@@ -5897,7 +5942,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -5916,7 +5963,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -5930,11 +5979,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0_8
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0_8
                   NCMPA = NCMPA + 1
@@ -6351,7 +6406,7 @@ C           -------------------------------------------------------
             DEGREE (I) = DEG
             IDENSE = .FALSE.
 C           
-       IF ( (Iversion .NE. 1).AND. (THRESM.GE.0)) THEN
+       IF ( (IVersion .NE. 1).AND. (THRESM.GE.0)) THEN
 C           -------------------
 C           Dense row detection
 C           -------------------
@@ -6998,6 +7053,7 @@ C-----------------------------------------------------------------------
      &        LENJ, LN, ME, MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X,
      &        NBFLAG, NREAL, LASTD, NELME, WF3, WF4, N2, PAS
+       INTEGER KNT1_UPDATED, KNT2_UPDATED
        INTEGER(8) :: MAXMEM, MEM, NEWMEM
        INTEGER   :: MAXINT_N
        INTEGER(8)::  HASH, HMOD
@@ -7384,7 +7440,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -7403,7 +7461,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -7417,11 +7477,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0_8
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0_8
                   NCMPA = NCMPA + 1
@@ -8545,6 +8611,7 @@ C     ThresMin  holds minimum value of THRESH
      &        ILAST, INEXT, J, JLAST, JNEXT, K, KNT1, KNT2, KNT3,
      &        LENJ, LN, ME, MINDEG, NEL, 
      &        NLEFT, NVI, NVJ, NVPIV, SLENME, WE, WFLG, WNVI, X
+      INTEGER KNT1_UPDATED, KNT2_UPDATED
       INTEGER :: SIZE_SCHUR_LOC
       INTEGER(8) MAXMEM, MEM, NEWMEM
       INTEGER :: MAXINT_N
@@ -8623,6 +8690,7 @@ C=======================================================================
            PE(1) = 0_8
            NV(1) = 1
            NCMPA = 0
+           PARENT(1) = 0
            RETURN
       ENDIF
       AGG6_loc = AGG6
@@ -9092,7 +9160,9 @@ C         ----------------------------------------------------------
           P = PE (ME)
           PME1 = PFREE
           SLENME = LEN (ME) - ELENME
+          KNT1_UPDATED = 0
           DO 120 KNT1 = 1, ELENME + 1
+            KNT1_UPDATED = KNT1_UPDATED +1
             IF (KNT1 .GT. ELENME) THEN
 C             search the supervariables in me.
               E = ME
@@ -9111,7 +9181,9 @@ C           new list, compressing when necessary. this loop is
 C           executed once for each element in the list and once for
 C           all the supervariables in the list.
 C           -------------------------------------------------------
+            KNT2_UPDATED = 0
             DO 110 KNT2 = 1, LN
+              KNT2_UPDATED = KNT2_UPDATED+1
               I = IW (PJ)
               PJ = PJ + 1
               NVI = NV (I)
@@ -9125,11 +9197,17 @@ C                 pointers and lengths so that the lists being
 C                 searched in the inner and outer loops contain
 C                 only the remaining entries.
                   PE (ME) = P
-                  LEN (ME) = LEN (ME) - KNT1
+                  LEN (ME) = LEN (ME) - KNT1_UPDATED
+C                 Reset KNT1_UPDATED in case of recompress 
+C                 at same iteration of the loop 120
+                  KNT1_UPDATED = 0
 C                 Check if anything left in supervariable ME
                   IF (LEN (ME) .EQ. 0) PE (ME) = 0
                   PE (E) = PJ
-                  LEN (E) = LN - KNT2
+                  LEN (E) = LN - KNT2_UPDATED
+C                 Reset KNT2_UPDATED in case of recompress 
+C                 at same iteration of the loop 110
+                  KNT2_UPDATED = 0
 C                 Check if anything left in element E
                   IF (LEN (E) .EQ. 0) PE (E) = 0
                   NCMPA = NCMPA + 1

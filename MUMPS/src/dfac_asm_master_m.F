@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -1261,6 +1261,7 @@ C
         DO JJ8 = POSELT, LAPOS2
           A(JJ8) = ZERO
         ENDDO
+!$OMP   END PARALLEL DO
       ELSE
         TOPDIAG = max(KEEP(7), KEEP(8))-1
 !$      CHUNK = max(KEEP(360)/2,

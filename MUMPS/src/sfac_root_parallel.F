@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -114,16 +114,20 @@ C
           CALL MUMPS_UPDATE_FLOPS_ROOT( OPELIW, LDLT,
      &                          root%TOT_ROOT_SIZE, INFO(2),
      &                          root%NPROW, root%NPCOL, MYID )
-          CALL UPDATE_FLOPS_STATS_ROOT( LDLT,
+          IF (KEEP(486) .GT. 0) THEN
+            CALL UPDATE_FLOPS_STATS_ROOT( LDLT,
      &                          root%TOT_ROOT_SIZE, INFO(2),
      &                          root%NPROW, root%NPCOL, MYID )
+          ENDIF
         ELSE
           CALL MUMPS_UPDATE_FLOPS_ROOT( OPELIW, LDLT,
      &                          root%TOT_ROOT_SIZE, root%TOT_ROOT_SIZE,
      &                          root%NPROW, root%NPCOL, MYID )
-          CALL UPDATE_FLOPS_STATS_ROOT( LDLT,
+          IF (KEEP(486) .GT. 0) THEN
+            CALL UPDATE_FLOPS_STATS_ROOT( LDLT,
      &                          root%TOT_ROOT_SIZE, root%TOT_ROOT_SIZE,
      &                          root%NPROW, root%NPCOL, MYID )
+          ENDIF
         ENDIF
         IF ( LDLT .EQ. 0 ) THEN
           ENTRIES_ROOT = int(root%TOT_ROOT_SIZE,8)

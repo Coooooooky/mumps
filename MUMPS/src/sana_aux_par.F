@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -167,12 +167,7 @@ C
      &        id%KEEP(210)=2    
          IF (id%KEEP(210).EQ.2) id%KEEP8(79)=huge(id%KEEP8(79))
          IF ((id%KEEP(210).EQ.1) .AND. (id%KEEP8(79).LE.0_8)) THEN
-            IF ( huge(id%KEEP8(79)) / K79REF + 1_8 .GE.
-     &                                 int(id%NSLAVES,8) ) THEN
-               id%KEEP8(79)=huge(id%KEEP8(79))
-            ELSE
-               id%KEEP8(79)=K79REF * int(id%NSLAVES,8)
-            ENDIF
+           id%KEEP8(79)=K79REF * int(id%NSLAVES,8)
          ENDIF
          IF ( (id%KEEP(79).EQ.0).OR.(id%KEEP(79).EQ.2).OR.
      &        (id%KEEP(79).EQ.3).OR.(id%KEEP(79).EQ.5).OR.
@@ -204,7 +199,7 @@ C
       SUBROUTINE SMUMPS_SET_PAR_ORD(id, ord)
       TYPE(SMUMPS_STRUC)  :: id
       TYPE(ORD_TYPE)      :: ord
-      INTEGER  :: IERR
+      INTEGER  :: IERR, WORKERS
 #if defined(parmetis) || defined(parmetis3)
       INTEGER  :: I, COLOR, BASE
       LOGICAL  :: IDO
@@ -214,7 +209,7 @@ C
      &     MPI_INTEGER, 0, id%COMM, IERR )
       IF ((id%KEEP(245) .LT. 0) .OR. (id%KEEP(245) .GT. 2)) THEN
          id%KEEP(245) = 0
-      END IF      
+      END IF
       IF (id%KEEP(245) .EQ. 0) THEN
 #if defined(ptscotch)
          IF(id%NSLAVES .LT. 2) THEN
@@ -230,14 +225,20 @@ C
          ord%NSLAVES    = id%NSLAVES
          ord%MYID       = id%MYID
          ord%IDO        = (id%MYID .GE. 1) .OR. (id%KEEP(46) .EQ. 1)
+         id%KEEP(245)   = 1
          IF(PROKG) WRITE(MPG,
      &           '("Parallel ordering tool set to PT-SCOTCH.")')
          RETURN
 #endif
 #if defined(parmetis) || defined(parmetis3)
+         IF(id%N.LE.100) THEN
+            WORKERS = 2
+         ELSE
+            WORKERS = min(id%NSLAVES,id%N/16)
+         END IF
          I=1
          DO
-            IF (I .GT. id%NSLAVES) EXIT
+            IF (I .GT. WORKERS) EXIT
             ord%NSLAVES = I
             I = I*2
          END DO
@@ -259,6 +260,7 @@ C
          ord%MYID     = id%MYID
          IF(PROKG) WRITE(MPG,
      &        '("Parallel ordering tool set to ParMETIS.")')
+         id%KEEP(245) = 2
          RETURN
 #endif         
          id%INFO(1)  = -38
@@ -297,9 +299,14 @@ C
 #endif
       ELSE IF (id%KEEP(245) .EQ. 2) THEN
 #if defined(parmetis) || defined(parmetis3)
+         IF(id%N.LE.100) THEN
+            WORKERS = 2
+         ELSE
+            WORKERS = min(id%NSLAVES,id%N/16)
+         END IF
          I=1
          DO
-            IF (I .GT. id%NSLAVES) EXIT
+            IF (I .GT. WORKERS) EXIT
             ord%NSLAVES = I
             I = I*2
          END DO
@@ -381,7 +388,7 @@ C
       CALL MPI_COMM_RANK (id%COMM, MYID, IERR)
       CALL MPI_COMM_SIZE (id%COMM, NPROCS, IERR)
       IERR=0
-      IF(MUMPS_GETSIZE(WORK) .LT. ID%N*3) THEN
+      IF(MUMPS_GETSIZE(WORK) .LT. id%N*3) THEN
          WRITE(LP,
      &        '("Insufficient workspace inside SMUMPS_PARMETIS_ORD")')
          CALL MUMPS_ABORT()
@@ -494,16 +501,16 @@ C
       TYPE(SMUMPS_STRUC)            :: id
       TYPE(ORD_TYPE)                :: ord
       INTEGER, POINTER              :: WORK(:)
-      INTEGER                       :: I, J, MYID, NPROCS, IERR
+      INTEGER                       :: MYID, NPROCS, IERR
       INTEGER, POINTER              :: FIRST(:),
      &     LAST(:), SWORK(:)
       INTEGER                       :: BASEVAL, VERTLOCNBR,
-     &     MYWORKID, BASE, SCOTCH_INT_SIZE
+     &     BASE, SCOTCH_INT_SIZE
       INTEGER(8)                    :: EDGELOCNBR
       INTEGER(8), POINTER           :: VERTLOCTAB(:)
       INTEGER, POINTER              :: EDGELOCTAB(:)
       nullify(FIRST, LAST, SWORK, VERTLOCTAB, EDGELOCTAB)
-      IF(MUMPS_GETSIZE(WORK) .LT. ID%N*3) THEN
+      IF(MUMPS_GETSIZE(WORK) .LT. id%N*3) THEN
          WRITE(LP,
      &      '("Insufficient workspace inside SMUMPS_PTSCOTCH_ORD")')
          CALL MUMPS_ABORT()
@@ -567,13 +574,13 @@ C
       IF ( id%INFO(1) .LT. 0 ) GOTO 11
       CALL  MPI_BCAST (ord%CBLKNBR, 1,      MPI_INTEGER,
      &     BASE, id%COMM, IERR)
-      CALL  MPI_BCAST (ord%PERMTAB, id%N,   MPI_INTEGER,
+      CALL  MPI_BCAST (ord%PERMTAB(1), id%N,   MPI_INTEGER,
      &     BASE, id%COMM, IERR)
-      CALL  MPI_BCAST (ord%PERITAB, id%N,   MPI_INTEGER,
+      CALL  MPI_BCAST (ord%PERITAB(1), id%N,   MPI_INTEGER,
      &     BASE, id%COMM, IERR)
-      CALL  MPI_BCAST (ord%RANGTAB, id%N+1, MPI_INTEGER,
+      CALL  MPI_BCAST (ord%RANGTAB(1), id%N+1, MPI_INTEGER,
      &     BASE, id%COMM, IERR)
-      CALL  MPI_BCAST (ord%TREETAB, id%N,   MPI_INTEGER,
+      CALL  MPI_BCAST (ord%TREETAB(1), id%N,   MPI_INTEGER,
      &     BASE, id%COMM, IERR)
       CALL MUMPS_REALLOC(ord%SON, ord%CBLKNBR, id%INFO,
      &     LP, STRING='SON', MEMCNT=MEMCNT, ERRCODE=-7)
@@ -721,11 +728,11 @@ C
      &     WORK(0:NNODES+1))
       NACTIVE = 0
       DO I=1, ord%CBLKNBR
-         IF (ORD%TREETAB(I).EQ.-1) THEN
+         IF (ord%TREETAB(I).EQ.-1) THEN
             NACTIVE = NACTIVE+1
             IF(NACTIVE.LE.NNODES) THEN
                ALIST(NACTIVE) = I
-               AWEIGHTS(NACTIVE) = ORD%NW(I)
+               AWEIGHTS(NACTIVE) = ord%NW(I)
             END IF
          END IF
       END DO
@@ -930,7 +937,7 @@ C
       AGG6   = .TRUE.
       PFREES = IPE(NROWS_LOC+1)
       PFS_SAVE = PFREES
-      PELEN = PFREES-1 + 2_8*int(NROWS_LOC,8)
+      PELEN = PFREES-1 + 2_8*int(NROWS_LOC+ord%TOPNODES(2),8)
          DO I=1, HIDX
             PERM(I) = I
          END DO
@@ -1057,15 +1064,7 @@ C
       CALL MPI_BARRIER(id%COMM, IERR)
       CALL MPI_BARRIER(id%COMM, IERR)
       CALL MUMPS_DEALLOC(LISTVAR_SCHUR, MEMCNT=MEMCNT) 
-      IF(ID%MYID.EQ.0) THEN
-         CALL MUMPS_DEALLOC(PE, MEMCNT=MEMCNT) 
-      else IF(ID%MYID.EQ.1) THEN
-         CALL MUMPS_DEALLOC(PE, MEMCNT=MEMCNT) 
-      else IF(ID%MYID.EQ.2) THEN
-         CALL MUMPS_DEALLOC(PE, MEMCNT=MEMCNT) 
-      else IF(ID%MYID.EQ.3) THEN
-         CALL MUMPS_DEALLOC(PE, MEMCNT=MEMCNT) 
-      END IF
+      CALL MUMPS_DEALLOC(PE, MEMCNT=MEMCNT) 
       IF(MYID .EQ. 0) THEN
          MAXS = NROWS_LOC
          DO I=2, NPROCS
@@ -1665,7 +1664,8 @@ C
          NEW_LOCNNZ = NEW_LOCNNZ + RCVCNT(I)
          MSGCNT(I) = RCVCNT(I)/int(BUFSIZE,8)
       END DO
-      CALL MUMPS_IREALLOC8(PE, max(NEW_LOCNNZ+2_8*int(NROWS_LOC,8),1_8),
+      CALL MUMPS_IREALLOC8(PE, max(NEW_LOCNNZ+
+     &     2_8*int(NROWS_LOC+ord%TOPNODES(2),8),1_8),
      &     id%INFO, LP, STRING='B_L_G:PE', MEMCNT=MEMCNT, ERRCODE=-7)
       IF(MEMCNT .GT. MAXMEM) MAXMEM=MEMCNT
       RCVPNT   = 1
@@ -1989,19 +1989,22 @@ C
       INTEGER, POINTER     :: TMP(:), NZ_ROW(:)
       INTEGER              :: I, IERR, P, F, J
       INTEGER(8)           :: LOCNNZ, INNZ, LOCOFFDIAG,
-     &     OFFDIAG, T
+     &     OFFDIAG, T, SHARE
       DO I=0, BASE-1
          FIRST(I+1) = 0
          LAST(I+1)  = -1
       END DO
       IF(TYPE.EQ.1) THEN
-      DO I=BASE, BASE+ord%NSLAVES-2
-         FIRST(I+1) = (id%N/ord%NSLAVES)*(I-BASE)+1
-         LAST(I+1)  = (id%N/ord%NSLAVES)*(I+1-BASE)
-      END DO
-      FIRST(BASE+ord%NSLAVES) = (id%N/ord%NSLAVES)*
-     &     (BASE+ord%NSLAVES-1-BASE)+1
-      LAST(BASE+ord%NSLAVES)  = id%N
+         SHARE = int(id%N/ord%NSLAVES,8)
+         DO I=1, ord%NSLAVES
+            FIRST(BASE+I) = (I-1)*int(SHARE)+1
+            LAST (BASE+I) = (I)*int(SHARE)
+         END DO
+         LAST(BASE+ord%NSLAVES) = MAX(LAST(BASE+ord%NSLAVES), id%N)
+         DO I = ord%NSLAVES+1, id%NSLAVES+1
+            FIRST(BASE+I) = id%N+1
+            LAST (BASE+I) = id%N
+         END DO
       ELSE IF (TYPE.EQ.2) THEN
          TMP    => WORK(1:id%N)
          NZ_ROW => WORK(id%N+1:2*id%N)
@@ -2009,11 +2012,11 @@ C
          LOCOFFDIAG = 0_8
          LOCNNZ = id%KEEP8(29)
          DO INNZ=1, LOCNNZ
-            IF(id%IRN_LOC(INNZ) .NE. id%JCN_LOC(INNZ)) THEN
-               TMP(id%IRN_LOC(INNZ)) = TMP(id%IRN_LOC(INNZ))+1
+            IF(id%IRN_loc(INNZ) .NE. id%JCN_loc(INNZ)) THEN
+               TMP(id%IRN_loc(INNZ)) = TMP(id%IRN_loc(INNZ))+1
                LOCOFFDIAG = LOCOFFDIAG+1
                IF(id%SYM.GT.0) THEN
-                  TMP(id%JCN_LOC(INNZ)) = TMP(id%JCN_LOC(INNZ))+1
+                  TMP(id%JCN_loc(INNZ)) = TMP(id%JCN_loc(INNZ))+1
                   LOCOFFDIAG = LOCOFFDIAG+1
                END IF
             END IF
@@ -2023,32 +2026,35 @@ C
          CALL MPI_ALLREDUCE(LOCOFFDIAG, OFFDIAG, 1,
      &        MPI_INTEGER8, MPI_SUM, id%COMM, IERR)
          nullify(TMP)
-         P = 1+BASE
+         SHARE = (OFFDIAG-1_8)/int(ord%NSLAVES,8) + 1_8
+         P = 0
          T = 0_8
          F = 1
-         I = 1
-         DO
-            IF(I.GE.id%N) THEN
-               FIRST(P) = F
-               LAST(P)  = id%N
-               DO J=P+1, NPROCS+1
-                  FIRST(J) = id%N+1
-                  LAST(J)  = id%N
-               END DO
-               EXIT
-            END IF
+         DO I=1, id%N
             T = T+int(NZ_ROW(I),8)
-            IF(T .GE. OFFDIAG/int(ord%NSLAVES,8)) THEN
-               FIRST(P) = F
-               LAST(P)  = I
-               F = I+1
-               P = P+1
-               T = 0_8
+            IF (
+     &           (T .GE. SHARE) .OR.
+     &           ((id%N-I).EQ.(ord%NSLAVES-P-1)) .OR.
+     &           (I.EQ.id%N)
+     &           ) THEN
+               P             = P+1
+               IF(P.EQ.ord%NSLAVES) THEN
+                  FIRST(BASE+P) = F
+                  LAST(BASE+P)  = id%N
+                  EXIT
+               ELSE
+                  FIRST(BASE+P) = F
+                  LAST(BASE+P)  = I
+                  F             = I+1
+                  T             = 0_8
+               END IF
             END IF
-            I = I+1
          END DO
-      END IF
-      RETURN
+         DO J=P+1, NPROCS+1-BASE
+            FIRST(BASE+J) = id%N+1
+            LAST(BASE+J)  = id%N
+         END DO
+      END IF         
       END SUBROUTINE SMUMPS_GRAPH_DIST
 #endif     
       SUBROUTINE SMUMPS_MERGESWAP(N, L, A1, A2)
@@ -2320,8 +2326,8 @@ C
       CALL MUMPS_PROPINFO( id%ICNTL(1), id%INFO(1),
      &     ord%COMM_NODES, id%MYID )
       IF ( id%INFO(1) .LT. 0 ) RETURN      
-      CALL MUMPS_COPY_INT_64TO32(VERTLOCTAB,
-     &     VERTLOCNBR+1, VERTLOCTAB_I4)
+      CALL MUMPS_COPY_INT_64TO32(VERTLOCTAB(1),
+     &     VERTLOCNBR+1, VERTLOCTAB_I4(1))
       EDGELOCNBR_I4 = int(EDGELOCNBR)
       IF(ord%SUBSTRAT .NE. 0) THEN
          STRSTRING='n{sep=m{asc=b{width=3,strat=q{strat=f}},'//
@@ -2386,8 +2392,8 @@ C
       IF ( id%INFO(1) .LT. 0 ) GOTO 10
       IF(MYWORKID .EQ. 0) THEN
          CALL SCOTCHFDGRAPHCORDERINIT(GRAPHDAT, CORDEDAT,
-     &        ord%PERMTAB, ord%PERITAB, ord%CBLKNBR, ord%RANGTAB,
-     &        ord%TREETAB, IERR)
+     &        ord%PERMTAB(1), ord%PERITAB(1), ord%CBLKNBR,
+     &        ord%RANGTAB(1), ord%TREETAB(1), IERR)
          IF(IERR.NE.0) THEN
             id%INFO(1:2) = -50
          END IF
@@ -2478,8 +2484,8 @@ C
        CALL MUMPS_PROPINFO( id%ICNTL(1), id%INFO(1),
      &     ord%COMM_NODES, id%MYID )
        IF ( id%INFO(1) .LT. 0 ) RETURN
-       CALL MUMPS_COPY_INT_32TO64_64C(EDGELOCTAB,
-     &     VERTLOCTAB(VERTLOCNBR+1)-1_8, EDGELOCTAB_I8)
+       CALL MUMPS_COPY_INT_32TO64_64C(EDGELOCTAB(1),
+     &     VERTLOCTAB(VERTLOCNBR+1)-1_8, EDGELOCTAB_I8(1))
        BASEVAL_I8    = int(BASEVAL,8)
        VERTLOCNBR_I8 = int(VERTLOCNBR,8)
       ENDIF
@@ -2543,12 +2549,12 @@ C
       IF(MYWORKID .EQ. 0) THEN
         IF (id%KEEP(10).NE.1) THEN 
          CALL SCOTCHFDGRAPHCORDERINIT(GRAPHDAT, CORDEDAT,
-     &        PERMTAB_I8, PERITAB_I8, CBLKNBR_I8, RANGTAB_I8,
-     &        TREETAB_I8, IERR)
+     &        PERMTAB_I8(1), PERITAB_I8(1), CBLKNBR_I8, RANGTAB_I8(1),
+     &        TREETAB_I8(1), IERR)
         ELSE
          CALL SCOTCHFDGRAPHCORDERINIT(GRAPHDAT, CORDEDAT,
-     &        ord%PERMTAB, ord%PERITAB, ord%CBLKNBR, ord%RANGTAB,
-     &        ord%TREETAB, IERR)
+     &        ord%PERMTAB(1), ord%PERITAB(1), ord%CBLKNBR,
+     &         ord%RANGTAB(1),ord%TREETAB(1), IERR)
         ENDIF
          IF(IERR.NE.0) THEN
             id%INFO(1:2) = -50
@@ -2581,14 +2587,14 @@ C
        CALL MUMPS_I8DEALLOC(EDGELOCTAB_I8, MEMCNT=MEMCNT)
        IF(MYWORKID .EQ. 0) THEN
          CALL SCOTCHFDGRAPHCORDEREXIT(GRAPHDAT, CORDEDAT)
-         CALL MUMPS_COPY_INT_64TO32(PERMTAB_I8,
-     &        size(ord%PERMTAB), ord%PERMTAB)
-         CALL MUMPS_COPY_INT_64TO32(PERITAB_I8,
-     &        size(ord%PERITAB), ord%PERITAB)
-         CALL MUMPS_COPY_INT_64TO32(TREETAB_I8,
-     &        size(ord%TREETAB), ord%TREETAB)
-         CALL MUMPS_COPY_INT_64TO32(RANGTAB_I8,
-     &        size(ord%RANGTAB), ord%RANGTAB)
+         CALL MUMPS_COPY_INT_64TO32(PERMTAB_I8(1),
+     &        size(ord%PERMTAB), ord%PERMTAB(1))
+         CALL MUMPS_COPY_INT_64TO32(PERITAB_I8(1),
+     &        size(ord%PERITAB), ord%PERITAB(1))
+         CALL MUMPS_COPY_INT_64TO32(TREETAB_I8(1),
+     &        size(ord%TREETAB), ord%TREETAB(1))
+         CALL MUMPS_COPY_INT_64TO32(RANGTAB_I8(1),
+     &        size(ord%RANGTAB), ord%RANGTAB(1))
          ord%CBLKNBR = int(CBLKNBR_I8)
          CALL MUMPS_I8DEALLOC(PERMTAB_I8, MEMCNT=MEMCNT)
          CALL MUMPS_I8DEALLOC(PERITAB_I8, MEMCNT=MEMCNT)

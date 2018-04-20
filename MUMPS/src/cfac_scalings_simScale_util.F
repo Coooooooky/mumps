@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -468,15 +468,17 @@ C         if this number of entries is odd we take the proc with largest id
 C         if this number of entries is even we take the proc with smallest id
 C     
       IMPLICIT NONE
-      INTEGER LEN
 #if defined(WORKAROUNDINTELILP64MPI2INTEGER)
+      INTEGER(4) :: LEN
       INTEGER(4) :: INV(2*LEN) 
       INTEGER(4) :: INOUTV(2*LEN)
+      INTEGER(4) :: DTYPE
 #else
-      INTEGER INV(2*LEN) 
-      INTEGER INOUTV(2*LEN)
+      INTEGER :: LEN
+      INTEGER :: INV(2*LEN) 
+      INTEGER :: INOUTV(2*LEN)
+      INTEGER :: DTYPE
 #endif
-      INTEGER DTYPE
       INTEGER I
 #if defined(WORKAROUNDINTELILP64MPI2INTEGER)
       INTEGER(4) DIN, DINOUT, PIN, PINOUT
@@ -510,14 +512,14 @@ C     SEPARATOR: Another function begins
 C
       SUBROUTINE CMUMPS_IBUINIT(IW, IWSZ, IVAL)
       IMPLICIT NONE
-#if defined(WORKAROUNDINTELILP64MPI2INTEGER)
       INTEGER IWSZ
-      INTEGER IW(IWSZ)
-#else
-      INTEGER(4) IWSZ
+#if defined(WORKAROUNDINTELILP64MPI2INTEGER)
       INTEGER(4) IW(IWSZ)
-#endif
+      INTEGER(4) IVAL
+#else
+      INTEGER IW(IWSZ)
       INTEGER IVAL
+#endif
       INTEGER I
       DO I=1,IWSZ
          IW(I)=IVAL
@@ -965,7 +967,11 @@ C     IF(IWSZ < 2*ISZ) THEN
 C     CHECK ENDS
          CALL MPI_OP_CREATE(CMUMPS_BUREDUCE, .TRUE., OP, IERROR)
 C     PERFORM THE REDUCTION
+#if defined(WORKAROUNDINTELILP64MPI2INTEGER)
+         CALL CMUMPS_IBUINIT(IWRK, 4*ISZ, int(ISZ,4))
+#else
          CALL CMUMPS_IBUINIT(IWRK, 4*ISZ, ISZ)
+#endif
          DO I=1,ISZ
             IWRK(2*I-1) = 0
             IWRK(2*I) = MYID

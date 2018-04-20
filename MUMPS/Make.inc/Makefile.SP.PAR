@@ -1,6 +1,6 @@
 #
-#  This file is part of MUMPS 5.1.1, released
-#  on Mon Mar 20 14:34:33 UTC 2017
+#  This file is part of MUMPS 5.1.2, released
+#  on Mon Oct  2 07:37:01 UTC 2017
 #
 #Begin orderings
 
@@ -96,6 +96,8 @@ OPTF    = -WF,-DPESSL -WF,-DSP_ -O3 -qstrict -qmaxmem=-1 -Q -qfixed -qalign=4k -
 OPTC    = -O3 -qstrict -qarch=auto -qtune=auto -qcache=auto -Q=150 -s -qmaxmem=-1 -qcpluscmt -q32 -bmaxdata:0x80000000
 OPTL    = -O3 -qstrict -Q -qfixed -qalign=4k -q32 -bmaxdata:0x80000000 
 #End Optimization options
+ 
+
 INCS = $(INCPAR)
 LIBS = $(LIBPAR)
 LIBSEQNEEDED =

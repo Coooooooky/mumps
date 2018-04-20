@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -1634,7 +1634,7 @@ C       The buffer is used both for solve and for DMUMPS_GATHER_SOLUTION
         ENDIF
         NB_BYTES = NB_BYTES + int(size(id%BUFR),8)*K34_8
         NB_BYTES_MAX = max(NB_BYTES_MAX,NB_BYTES)
-      IF ( I_AM_SLAVE ) THEN
+      IF ( I_AM_SLAVE .AND. id%NSLAVES .GT. 1 ) THEN
 C       ------------------------------------------------------
 C       Dimension send buffer for small integers, e.g. TRACINE
 C       ------------------------------------------------------
@@ -4820,8 +4820,8 @@ C
             DEALLOCATE(IW1)
             IF (ICNTL11 .EQ. 1) THEN
 C             We have used D only for LCOND1,2
-              DEALLOCATE(D)
               NB_BYTES = NB_BYTES - int(size(D  ),8)*K16_8
+              DEALLOCATE(D)
             ENDIF
           ENDIF
           NB_BYTES = NB_BYTES -
@@ -5162,8 +5162,10 @@ C       SLAVE CODE
 C       -----------------------
 C       Deallocate send buffers
 C       -----------------------
-        CALL DMUMPS_BUF_DEALL_CB( IERR )
-        CALL DMUMPS_BUF_DEALL_SMALL_BUF( IERR )
+        IF (id%NSLAVES .GT. 1) THEN
+          CALL DMUMPS_BUF_DEALL_CB( IERR )
+          CALL DMUMPS_BUF_DEALL_SMALL_BUF( IERR )
+        ENDIF
       END IF
 C
       IF ( id%MYID .eq. MASTER ) THEN

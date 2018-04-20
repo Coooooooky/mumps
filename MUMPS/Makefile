@@ -1,10 +1,12 @@
 #
-#  This file is part of MUMPS 5.1.1, released
-#  on Mon Mar 20 14:34:33 UTC 2017
+#  This file is part of MUMPS 5.1.2, released
+#  on Mon Oct  2 07:37:01 UTC 2017
 #
+
+FC = mpif90
+
 topdir = .
 libdir = $(topdir)/lib
-LIBEXT=.a
 
 default:	dexamples
 
@@ -27,47 +29,58 @@ d:
 
 # Is Makefile.inc available ?
 Makefile.inc:
+	@echo "######################################################################"
+	@echo "# BEFORE COMPILING MUMPS, YOU SHOULD HAVE AN APPROPRIATE FILE"
+	@echo "# Makefile.inc AVALAIBLE. PLEASE LOOK IN THE DIRECTORY ./Make.inc FOR"
+	@echo "# EXAMPLES OF Makefile.inc FILES, AT Make.inc/Makefile.inc.generic"
+	@echo "# IN CASE YOU NEED TO BUILD A NEW ONE AND READ THE MAIN README FILE"
+	@echo "######################################################################"
+	@exit 1
 
 include Makefile.inc
 
 mumps_lib: requiredobj
-	$(MAKE) -C src $(ARITH)
+	(cd src ; $(MAKE) $(ARITH))
+	mv src/*.mod include/
 
 cexamples:	c
-#	(cd examples ; $(MAKE) c)
+	(cd examples ; $(MAKE) c)
 
 zexamples:	z
-#	(cd examples ; $(MAKE) z)
+	(cd examples ; $(MAKE) z)
 
 sexamples:	s
-#	(cd examples ; $(MAKE) s)
+	(cd examples ; $(MAKE) s)
 
 dexamples:	d
-#	(cd examples ; $(MAKE) d)
+	(cd examples ; $(MAKE) d)
 
 multi_example:	s d c z
-#	(cd examples ; $(MAKE) multi)
+	(cd examples ; $(MAKE) multi)
 
 requiredobj: Makefile.inc $(LIBSEQNEEDED) $(libdir)/libpord$(PLAT)$(LIBEXT)
 
 # dummy MPI library (sequential version)
 
 libseqneeded:
-	$(MAKE) -C libseq
+	(cd libseq; $(MAKE))
 
 # Build the libpord.a library and copy it into $(topdir)/lib
 $(libdir)/libpord$(PLAT)$(LIBEXT):
-ifdef LPORDDIR
-	  $(MAKE) -C $(LPORDDIR) CFLAGS="$(OPTC)"
-	  cp $(LPORDDIR)/libpord$(LIBEXT) $@
-endif
+	if [ "$(LPORDDIR)" != "" ] ; then \
+	  cd $(LPORDDIR); \
+	  $(MAKE) CC="$(CC)" CFLAGS="$(OPTC)" AR="$(AR)" RANLIB="$(RANLIB)" OUTC="$(OUTC)" LIBEXT=$(LIBEXT); \
+	fi;
+	if [ "$(LPORDDIR)" != "" ] ; then \
+	  cp $(LPORDDIR)/libpord$(LIBEXT) $@; \
+	fi;
 
 clean:
-	$(MAKE) -C src clean
-#	$(MAKE) -C examples clean
-	$(RM) $(libdir)/*$(PLAT)$(LIBEXT)
-	$(MAKE) -C libseq clean
-ifdef LPORDDIR
-	  $(MAKE) -C $(LPORDDIR) realclean
-endif
+	(cd src; $(MAKE) clean)
+	(cd examples; $(MAKE) clean)
+	(cd $(libdir); $(RM) *$(PLAT)$(LIBEXT))
+	(cd libseq; $(MAKE) clean)
+	if [ "$(LPORDDIR)" != "" ] ; then \
+	  cd $(LPORDDIR); $(MAKE) realclean; \
+        fi;
 

@@ -1,6 +1,6 @@
 #
-#  This file is part of MUMPS 5.1.1, released
-#  on Mon Mar 20 14:34:33 UTC 2017
+#  This file is part of MUMPS 5.1.2, released
+#  on Mon Oct  2 07:37:01 UTC 2017
 #
 #Begin orderings
 
@@ -92,6 +92,8 @@ OPTL    = -O -OPT:Olimit=0 -mips4 -64 -align64
 OPTC    = -O -OPT:Olimit=0 -mips4 -64 -align64
 NOOPT   = -Dsgi -mips4 -64 -align64
 #End Optimization options
+ 
+
 INCS = $(INCPAR)
 LIBS = $(LIBPAR)
 LIBSEQNEEDED =

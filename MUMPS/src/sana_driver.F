@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -2472,12 +2472,17 @@ C     other control parameters
             RETURN
          END IF
 #endif
-C     Analysis strategy is set to automatic.
-C     Check for availability of parallel ordering tools
-C     otherwise set it to sequential.
+C        Analysis strategy is set to automatic in case of out-of-range values.
          IF((id%KEEP(244) .GT. 2) .OR.
      &        (id%KEEP(244) .LT. 0)) id%KEEP(244)=0
-         IF(id%KEEP(244) .EQ. 0) THEN
+         IF(id%KEEP(244) .EQ. 0) THEN ! Automatic
+C           One could check for availability of parallel ordering
+C           tools, or for possible options incompatible with //
+C           analysis to decide (e.g. avoid returning an error if
+C           // analysis not compatible with some option but user
+C           lets MUMPS decide to choose sequential or paralllel
+C           analysis)
+C           Current strategy for automatic is sequential analysis
             id%KEEP(244) = 1
          ELSE IF (id%KEEP(244) .EQ. 2) THEN
             IF(id%KEEP(55) .NE. 0) THEN
@@ -2511,10 +2516,32 @@ C     the parallel analysis we simply revert to sequential version
      &              '("Too few processes.
      & Reverting to sequential analysis")',advance='no')
                IF(id%KEEP(245) .EQ. 1) THEN
-                  IF(PROKG) WRITE(MPG, '(" with SCOTCH")')
+C                 Scotch necessarily available because pt-scotch
+C                 is, otherwise an error would have occurred
+                  IF(PROKG) WRITE(MPG, '(" with SCOTCH.")')
                   id%KEEP(256) = 3
                ELSE IF(id%KEEP(245) .EQ. 2) THEN
-                  IF(PROKG) WRITE(MPG, '(" with Metis")')
+C                 Metis necessarily available because parmetis
+C                 is, otherwise an error would have occurred
+                  IF(PROKG) WRITE(MPG, '(" with Metis.")')
+                  id%KEEP(256) = 5
+               ELSE
+                  IF(PROKG) WRITE(MPG, '(".")')
+                  id%KEEP(256) = 7
+               END IF
+            END IF
+C     In the case where there the input matrix is too small to do
+C     the parallel analysis we simply revert to sequential version
+            IF(id%N .LE. 50) THEN
+               id%KEEP(244) = 1
+               IF(PROKG) WRITE(MPG,
+     &            '("Input matrix is too small for the parallel
+     & analysis. Reverting to sequential analysis")',advance='no')
+               IF(id%KEEP(245) .EQ. 1) THEN
+                  IF(PROKG) WRITE(MPG, '(" with SCOTCH.")')
+                  id%KEEP(256) = 3
+               ELSE IF(id%KEEP(245) .EQ. 2) THEN
+                  IF(PROKG) WRITE(MPG, '(" with Metis.")')
                   id%KEEP(256) = 5
                ELSE
                   IF(PROKG) WRITE(MPG, '(".")')

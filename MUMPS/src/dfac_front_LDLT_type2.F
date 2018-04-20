@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -131,17 +131,19 @@ C
       DOUBLE PRECISION ONE
       PARAMETER (ONE = 1.0D0)
       NULLIFY(BLR_L) 
-      LOC_UPDT_TIME = 0.D0
-      LOC_PROMOTING_TIME = 0.D0
-      LOC_DEMOTING_TIME = 0.D0
-      LOC_CB_DEMOTING_TIME = 0.D0
-      LOC_FRPANELS_TIME = 0.0D0
-      LOC_FRFRONTS_TIME = 0.0D0
-      LOC_TRSM_TIME = 0.D0
-      LOC_LR_MODULE_TIME = 0.D0
-      LOC_FAC_I_TIME = 0.D0
-      LOC_FAC_MQ_TIME = 0.D0
-      LOC_FAC_SQ_TIME = 0.D0
+      IF (KEEP(486).NE.0) THEN
+        LOC_UPDT_TIME = 0.D0
+        LOC_PROMOTING_TIME = 0.D0
+        LOC_DEMOTING_TIME = 0.D0
+        LOC_CB_DEMOTING_TIME = 0.D0
+        LOC_FRPANELS_TIME = 0.0D0
+        LOC_FRFRONTS_TIME = 0.0D0
+        LOC_TRSM_TIME = 0.D0
+        LOC_LR_MODULE_TIME = 0.D0
+        LOC_FAC_I_TIME = 0.D0
+        LOC_FAC_MQ_TIME = 0.D0
+        LOC_FAC_SQ_TIME = 0.D0
+      ENDIF
       IF (KEEP(206).GE.1) THEN
         Inextpiv = 1   
       ELSE 
@@ -678,19 +680,22 @@ C
            DEALLOCATE(BEGS_BLR)
            NULLIFY(BEGS_BLR)
          ENDIF
-      ELSE
+      ENDIF
+      IF (KEEP(486).NE.0) THEN
+        IF (.NOT.LR_ACTIVATED) THEN
           CALL SYSTEM_CLOCK(TTOT2FR,COUNT_RATETOTFR)
           LOC_FRFRONTS_TIME =
      &       DBLE(TTOT2FR-TTOT1FR)/DBLE(COUNT_RATETOTFR)
           CALL UPDATE_FLOP_STATS_FRFRONTS(NFRONT, NPIV, NASS, KEEP(50), 
      &                                       2)
-      ENDIF
-      CALL UPDATE_ALL_TIMES(INODE,LOC_UPDT_TIME,LOC_PROMOTING_TIME,
+        ENDIF
+        CALL UPDATE_ALL_TIMES(INODE,LOC_UPDT_TIME,LOC_PROMOTING_TIME,
      &                        LOC_DEMOTING_TIME, LOC_CB_DEMOTING_TIME,
      &                        LOC_FRPANELS_TIME, LOC_FRFRONTS_TIME,
      &                        LOC_TRSM_TIME, LOC_LR_MODULE_TIME,
      &                        LOC_FAC_I_TIME, LOC_FAC_MQ_TIME,
      &                        LOC_FAC_SQ_TIME)
+      ENDIF
       RETURN
       END SUBROUTINE DMUMPS_FAC2_LDLT
       SUBROUTINE DMUMPS_RESET_TO_ONE(FRONT_INDEX_LIST, NPIV,

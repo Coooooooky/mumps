@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -646,16 +646,14 @@ C     - NAG Ltd.
       INTEGER            ::  INFO, LDA, LDW, M, N, RANK, MAXRANK
       REAL               ::  TOLEPS
       INTEGER            ::  JPVT(*)
-      REAL, TARGET       ::  RWORK(*)
+      REAL               ::  RWORK(*)
       COMPLEX            ::  A(LDA,*), TAU(*)
-      COMPLEX, TARGET    ::  WORK(LDW,*)
+      COMPLEX            ::  WORK(LDW,*)
       INTEGER, PARAMETER ::  INB=1, INBMIN=2
       INTEGER            :: J, JB, MINMN, NB
       INTEGER            :: OFFSET, ITEMP
-      INTEGER            :: LSTICC, PVT, K, RK, LDF
+      INTEGER            :: LSTICC, PVT, K, RK
       REAL               :: TEMP, TEMP2, TOL3Z
-      REAL, POINTER      :: VN1(:), VN2(:)
-      COMPLEX, POINTER   :: AUXV(:,:), F(:,:)
       COMPLEX            :: AKK
       REAL, PARAMETER    :: RZERO=0.0E+0, RONE=1.0E+0
       COMPLEX :: ZERO
@@ -691,16 +689,22 @@ C     - NAG Ltd.
          RETURN
       END IF
       NB = ILAENV( INB, 'CGEQRF', ' ', M, N, -1, -1 )
-      VN1  => RWORK(1:N)
-      VN2  => RWORK(N+1:2*N)
-      AUXV => WORK(1:LDW,1:1)
-      F    => WORK(1:LDW,2:NB+1)
-      LDF  =  LDW
+C
+C     Avoid pointers (and TARGET attribute on RWORK/WORK)
+C     because of implicit interface. An implicit interface
+C     is needed to avoid intermediate array copies
+C     VN1  => RWORK(1:N)
+C     VN2  => RWORK(N+1:2*N)
+C     AUXV => WORK(1:LDW,1:1)
+C     F    => WORK(1:LDW,2:NB+1)
+C     LDF  =  LDW
 *     Initialize partial column norms. The first N elements of work
 *     store the exact column norms.
       DO J = 1, N
-         VN1( J ) = scnrm2( M, A( 1, J ), 1 )
-         VN2( J ) = VN1( J )
+C        VN1( J ) = scnrm2( M, A( 1, J ), 1 )
+         RWORK( J ) = scnrm2( M, A( 1, J ), 1 )
+C        VN2( J ) = VN1( J )
+         RWORK( N + J ) = RWORK( J )
          JPVT(J) = J
       END DO
       OFFSET = 0
@@ -713,8 +717,10 @@ C     - NAG Ltd.
             IF(K.EQ.JB) EXIT
             K   = K+1
             RK  = OFFSET+K
-            PVT = ( RK-1 ) + ISAMAX( N-RK+1, VN1( RK ), 1 )
-            IF(VN1(PVT).LT.TOLEPS) THEN
+C           PVT = ( RK-1 ) + ISAMAX( N-RK+1, VN1( RK ), 1 )
+            PVT = ( RK-1 ) + ISAMAX( N-RK+1, RWORK( RK ), 1 )
+C           IF(VN1(PVT).LT.TOLEPS) THEN
+            IF(RWORK(PVT).LT.TOLEPS) THEN
                RANK = RK-1
                RETURN
             END IF
@@ -725,25 +731,32 @@ C     - NAG Ltd.
             END IF
             IF( PVT.NE.RK ) THEN
                CALL cswap( M, A( 1, PVT ), 1, A( 1, RK ), 1 )
-               CALL cswap( K-1, F( PVT-OFFSET, 1 ), LDF,
-     &              F( K, 1 ), LDF )
+c              CALL cswap( K-1, F( PVT-OFFSET, 1 ), LDF,
+c    &              F( K, 1 ), LDF )
+               CALL cswap( K-1, WORK( PVT-OFFSET, 2 ), LDW,
+     &              WORK( K, 2 ), LDW )
                ITEMP     = JPVT(PVT)
                JPVT(PVT) = JPVT(RK)
                JPVT(RK)  = ITEMP
-               VN1(PVT)  = VN1(RK)
-               VN2(PVT)  = VN2(RK)
+C              VN1(PVT)  = VN1(RK)
+C              VN2(PVT)  = VN2(RK)
+               RWORK(PVT)    = RWORK(RK)
+               RWORK(N+PVT)  = RWORK(N+RK)
             END IF
 *     Apply previous Householder reflectors to column K:
 *     A(RK:M,RK) := A(RK:M,RK) - A(RK:M,OFFSET+1:RK-1)*F(K,1:K-1)**H.
             IF( K.GT.1 ) THEN
                DO J = 1, K-1
-                  F( K, J ) = CONJG( F( K, J ) )
+C                 F( K, J ) = CONJG( F( K, J ) )
+                  WORK( K, J+1 ) = CONJG( WORK( K, J+1 ) )
                END DO
                CALL cgemv( 'No transpose', M-RK+1, K-1, -ONE,
-     &              A(RK,OFFSET+1), LDA, F(K,1), LDF,
+C    &              A(RK,OFFSET+1), LDA, F(K,1), LDF,
+     &              A(RK,OFFSET+1), LDA, WORK(K,2), LDW,
      &              ONE, A(RK,RK), 1 )
                DO J = 1, K - 1
-                  F( K, J ) = CONJG( F( K, J ) )
+C                 F( K, J ) = CONJG( F( K, J ) )
+                  WORK( K, J + 1 ) = CONJG( WORK( K, J + 1 ) )
                END DO
             END IF
 *     Generate elementary reflector H(k).
@@ -759,46 +772,56 @@ C     - NAG Ltd.
             IF( RK.LT.N ) THEN
                CALL cgemv( 'Conjugate transpose', M-RK+1, N-RK, TAU(RK),
      &              A(RK,RK+1), LDA, A(RK,RK), 1, ZERO,
-     &              F( K+1, K ), 1 )
+C    &              F( K+1, K ), 1 )
+     &              WORK( K+1, K+1 ), 1 )
             END IF
 *     Padding F(1:K,K) with zeros.
             DO J = 1, K
-               F( J, K ) = ZERO
+C              F( J, K ) = ZERO
+               WORK( J, K+1 ) = ZERO
             END DO
 *     Incremental updating of F:
 *     F(1:N,K) := F(1:N-OFFSET,K) - tau(RK)*F(1:N,1:K-1)*A(RK:M,OFFSET+1:RK-1)**H*A(RK:M,RK).
             IF( K.GT.1 ) THEN
                CALL cgemv( 'Conjugate transpose', M-RK+1, K-1, -TAU(RK),
      &              A(RK,OFFSET+1), LDA, A(RK,RK), 1, ZERO,
-     &              AUXV(1,1), 1 )
+     &              WORK(1,1), 1 )
+C    &              AUXV(1,1), 1 )
                CALL cgemv( 'No transpose', N-OFFSET, K-1, ONE,
-     &              F(1,1), LDF, AUXV(1,1), 1, ONE, F(1,K), 1 )
+     &              WORK(1,2), LDW, WORK(1,1), 1, ONE, WORK(1,K+1), 1 )
+C    &              F(1,1), LDF, AUXV(1,1), 1, ONE, F(1,K), 1 )
             END IF
 *     Update the current row of A:
 *     A(RK,RK+1:N) := A(RK,RK+1:N) - A(RK,OFFSET+1:RK)*F(K+1:N,1:K)**H.
             IF( RK.LT.N ) THEN
                CALL cgemm( 'No transpose', 'Conjugate transpose',
      &              1, N-RK,
-     &              K, -ONE, A( RK, OFFSET+1 ), LDA, F( K+1, 1 ), LDF,
+C    &              K, -ONE, A( RK, OFFSET+1 ), LDA, F( K+1, 1 ), LDF,
+     &              K, -ONE, A( RK, OFFSET+1 ), LDA, WORK( K+1,2 ), LDW,
      &              ONE, A( RK, RK+1 ), LDA )
             END IF
 *     Update partial column norms.
 *     
             IF( RK.LT.MINMN ) THEN
                DO J = RK + 1, N
-                  IF( VN1( J ).NE.RZERO ) THEN
+C                 IF( VN1( J ).NE.RZERO ) THEN
+                  IF( RWORK( J ).NE.RZERO ) THEN
 *     
 *     NOTE: The following 4 lines follow from the analysis in
 *     Lapack Working Note 176.
 *
-                     TEMP = ABS( A( RK, J ) ) / VN1( J )
+C                    TEMP = ABS( A( RK, J ) ) / VN1( J )
+                     TEMP = ABS( A( RK, J ) ) / RWORK( J )
                      TEMP = MAX( RZERO, ( RONE+TEMP )*( RONE-TEMP ) )
-                     TEMP2 = TEMP*( VN1( J ) / VN2( J ) )**2
+C                    TEMP2 = TEMP*( VN1( J ) / VN2( J ) )**2
+                     TEMP2 = TEMP*( RWORK( J ) / RWORK( N+J ) )**2
                      IF( TEMP2 .LE. TOL3Z ) THEN
-                        VN2( J ) = REAL( LSTICC )
+C                       VN2( J ) = REAL( LSTICC )
+                        RWORK( N+J ) = REAL( LSTICC )
                         LSTICC = J
                      ELSE
-                        VN1( J ) = VN1( J )*SQRT( TEMP )
+C                       VN1( J ) = VN1( J )*SQRT( TEMP )
+                        RWORK( J ) = RWORK( J )*SQRT( TEMP )
                      END IF
                   END IF
                END DO
@@ -812,18 +835,22 @@ C     - NAG Ltd.
          IF( RK.LT.MIN(N,M) ) THEN
             CALL cgemm( 'No transpose', 'Conjugate transpose', M-RK,
      &           N-RK, K, -ONE, A(RK+1,OFFSET+1), LDA,
-     &           F(K+1,1), LDF, ONE, A(RK+1,RK+1), LDA )
+C    &           F(K+1,1), LDF, ONE, A(RK+1,RK+1), LDA )
+     &           WORK(K+1,2), LDW, ONE, A(RK+1,RK+1), LDA )
          END IF
 *     Recomputation of difficult columns.
          DO WHILE( LSTICC.GT.0 ) 
-            ITEMP = NINT( VN2( LSTICC ) )
-            VN1( LSTICC ) = scnrm2( M-RK, A( RK+1, LSTICC ), 1 )
+C           ITEMP = NINT( VN2( LSTICC ) )
+            ITEMP = NINT( RWORK( N + LSTICC ) )
+C           VN1( LSTICC ) = scnrm2( M-RK, A( RK+1, LSTICC ), 1 )
+            RWORK( LSTICC ) = scnrm2( M-RK, A( RK+1, LSTICC ), 1 )
 *     
-*     NOTE: The computation of VN1( LSTICC ) relies on the fact that 
+*     NOTE: The computation of RWORK( LSTICC ) relies on the fact that 
 *     SNRM2 does not fail on vectors with norm below the value of
 *     SQRT(DLAMCH('S')) 
 *     
-            VN2( LSTICC ) = VN1( LSTICC )
+C           VN2( LSTICC ) = VN1( LSTICC )
+            RWORK( N + LSTICC ) = RWORK( LSTICC )
             LSTICC = ITEMP
          END DO
          IF(RK.GE.MINMN) EXIT

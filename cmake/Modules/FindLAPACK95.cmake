@@ -7,19 +7,22 @@
 # Michael Hirsch, Ph.D.
 #
 # Finds the LAPACK95 static library  (need the .a/.lib specified or CMake won't find it, unlike .so/.dll that can be omitted)
-# tested with Netlib LAPACK95, minor tweaks for others may be necessary--let me know.
+# tested with Netlib LAPACK95
 #
 # This will define the following variables::
 #
 #   LAPACK95_FOUND    - True if the system has the LAPACK95 library
 #   LAPACK95_VERSION  - The version of the LAPACK95 library which was found
 
+find_package(LAPACK REQUIRED)
+
+
 find_package(PkgConfig)
 pkg_check_modules(PC_LAPACK95 QUIET LAPACK95)
 
 
 find_library(LAPACK95_LIBRARY
-             NAMES lapack95.a mkl_lapack95_lp64.a mkl_lapack95_lp64.lib
+             NAMES lapack95.a
              PATHS ${PC_LAPACK95_LIBRARY_DIRS}
              HINTS ${LAPACK95_ROOT})
 
@@ -39,8 +42,8 @@ find_package_handle_standard_args(LAPACK95
     VERSION_VAR LAPACK95_VERSION)
 
 if(LAPACK95_FOUND)
-  set(LAPACK95_LIBRARIES ${LAPACK95_LIBRARY})
-  set(LAPACK95_INCLUDE_DIRS ${LAPACK95_INCLUDE_DIR})
+  set(LAPACK95_LIBRARIES ${LAPACK95_LIBRARY} ${LAPACK_LIBRARIES})  # MUST be in this order!
+  set(LAPACK95_INCLUDE_DIRS ${LAPACK95_INCLUDE_DIR} ${LAPACK_INCLUDE_DIRS})
   set(LAPACK95_DEFINITIONS  ${PC_LAPACK95_CFLAGS_OTHER})
 endif()
 

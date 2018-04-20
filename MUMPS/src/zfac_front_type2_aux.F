@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -741,7 +741,11 @@ C
      &       ISTEP_TO_INIV2, TAB_POS_IN_PERE, .TRUE.
      &               , LRGROUPS
      &        )
-            IF (MESSAGE_RECEIVED) POSELT = PTRAST(STEP(INODE))
+            IF (MESSAGE_RECEIVED) THEN
+              POSELT = PTRAST(STEP(INODE))
+              APOS   = POSELT + int(LDA_FS,8)*int(IBEG_BLOCK-1,8) +
+     &                 int(IBEG_BLOCK - 1,8)
+            ENDIF
             IF ( IFLAG .LT. 0 ) GOTO 500
           ENDIF
         ENDDO

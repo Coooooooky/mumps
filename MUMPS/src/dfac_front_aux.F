@@ -1,6 +1,6 @@
 C
-C  This file is part of MUMPS 5.1.1, released
-C  on Mon Mar 20 14:34:33 UTC 2017
+C  This file is part of MUMPS 5.1.2, released
+C  on Mon Oct  2 07:37:01 UTC 2017
 C
 C
 C  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
@@ -673,7 +673,7 @@ C
      &     PP_LastPIVRPTRFilled_L,
      &     PP_FIRST2SWAP_U, PP_LastPanelonDisk_U,
      &     PP_LastPIVRPTRFilled_U,
-     &     PIVOT_OPTION, IEND_BLR, Inextpiv,
+     &     PIVOT_OPTION, LR_ACTIVATED, IEND_BLR, Inextpiv,
      &     TIPIV    
      &     )
 !$    USE OMP_LIB
@@ -699,6 +699,7 @@ C
      &        PP_FIRST2SWAP_U, PP_LastPanelonDisk_U,
      &        PP_LastPIVRPTRFilled_U
       INTEGER, intent(in)    :: PIVOT_OPTION, IEND_BLR
+      LOGICAL, intent(in)    :: LR_ACTIVATED
       INTEGER, intent(inout) :: Inextpiv
       INCLUDE 'mumps_headers.h'
       DOUBLE PRECISION SWOP
@@ -807,7 +808,8 @@ C
   340       CONTINUE
             AMROW = RZERO
             J1 = APOS
-            IF (PIVOT_OPTION.EQ.1 .OR. KEEP(480).GE.2) THEN
+            IF (PIVOT_OPTION.EQ.1 .OR. 
+     &         (LR_ACTIVATED.AND.KEEP(480).GE.2)) THEN
               J = IEND_BLR - NPIV
             ELSE
               J = NASS - NPIV
@@ -849,9 +851,13 @@ C
             JJ    = J1 + int(JMAX - 1,8)
             AMROW = abs(A(JJ))
             RMAX = AMROW
-            IF (PIVOT_OPTION.GE.3) THEN
+            IF (PIVOT_OPTION.GE.2) THEN
               J1 = J2 + 1_8
-              J2 = APOS +int(- NPIV + NFRONT - 1 - KEEP(253),8)
+              IF (PIVOT_OPTION.GE.3) THEN
+                J2 = APOS +int(- NPIV + NFRONT - 1 - KEEP(253),8)
+              ELSE
+                J2 = APOS +int(- NPIV + NASS - 1 - KEEP(253),8)
+              ENDIF
               IF (J2.LT.J1) GO TO 370
               IF (KEEP(351).EQ.1) THEN
 !$              CHUNK = max(K361/2,int(J2-J1)/NOMP)
