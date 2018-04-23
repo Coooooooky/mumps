@@ -24,12 +24,13 @@ pkg_check_modules(PC_LAPACK95 QUIET LAPACK95)
 find_library(LAPACK95_LIBRARY
              NAMES lapack95.a
              PATHS ${PC_LAPACK95_LIBRARY_DIRS}
+             PATH_SUFFIXES LAPACK95
              HINTS ${LAPACK95_ROOT})
 
 find_path(LAPACK95_INCLUDE_DIR
           NAMES f95_lapack.mod
           PATHS ${PC_LAPACK95_INCLUDE_DIRS}
-          PATH_SUFFIXES lapack95_modules
+          PATH_SUFFIXES LAPACK95 lapack95_modules
           HINTS ${LAPACK95_ROOT})
 
 set(LAPACK95_VERSION ${PC_LAPACK95_VERSION})
