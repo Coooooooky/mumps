@@ -33,8 +33,8 @@ build_script:
   
 after_build:
 - cd $APPVEYOR_BUILD_FOLDER/tests/bin
-- cmd: cmake -G "MinGW Makefiles" -DLAPACK95_ROOT=$APPVEYOR_BUILD_FOLDER/LAPACK95 ..
-- sh: cmake -DLAPACK95_ROOT=$APPVEYOR_BUILD_FOLDER/LAPACK95 ..
+- cmd: cmake -G "MinGW Makefiles" ..
+- sh: cmake ..
 - make
 - make test
 

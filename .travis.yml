@@ -61,7 +61,7 @@ install:
   
 script:
   - cd $TRAVIS_BUILD_DIR/tests/bin
-  - cmake -DLAPACK95_ROOT=$TRAVIS_BUILD_DIR/LAPACK95 ..
+  - cmake ..
   - make
   - make test
   
