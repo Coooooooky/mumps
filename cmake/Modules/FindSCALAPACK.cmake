@@ -4,14 +4,23 @@
 unset(SCALAPACK_LIBRARY)
 
 if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
-  foreach(alib mkl_scalapack_lp64 mkl_intel_lp64 mkl_intel_thread mkl_core mkl_blacs_intelmpi_lp64 iomp5) 
-    find_library(blib
-             NAMES ${alib}
+  # FIXME: this would be for threaded
+  # mkl_scalapack_lp64 mkl_intel_lp64 mkl_intel_thread mkl_core mkl_blacs_intelmpi_lp64 iomp5
+  
+  # this is for sequential:
+  foreach(slib mkl_scalapack_lp64 mkl_intel_lp64 mkl_sequential mkl_core mkl_blacs_intelmpi_lp64)
+    find_library(SCALAPACK_${slib}_LIBRARY
+             NAMES ${slib}
              PATHS $ENV{MKLROOT}/lib
                    $ENV{MKLROOT}/lib/intel64
                    $ENV{INTEL}/mkl/lib/intel64
              NO_DEFAULT_PATH)
-    list(APPEND SCALAPACK_LIBRARY ${blib})
+    if(NOT SCALAPACK_{slib}_LIBRARY)
+      message(FATAL_ERROR "NOT FOUND: " ${slib} ${SCALAPACK_${slib}_LIBRARY})
+    endif()
+    message(STATUS "Scalapack FOUND: " ${slib} ${SCALAPACK_${slib}_LIBRARY})
+    list(APPEND SCALAPACK_LIBRARY ${SCALAPACK_${slib}_LIBRARY})
+    mark_as_advanced(SCALAPACK_${slib}_LIBRARY)
   endforeach()
   list(APPEND SCALAPACK_LIBRARY pthread dl m)
 else()
