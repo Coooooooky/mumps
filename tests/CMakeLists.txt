@@ -20,9 +20,15 @@ endif()
 set(LAPACK95_ROOT ../LAPACK95)
 find_package(LAPACK95 REQUIRED)
 
-add_executable(lp95 assert.f90 DemoLapack95.f90)
+add_executable(lp95 assert.f90)
 target_link_libraries(lp95 PRIVATE ${LAPACK95_LIBRARIES})
 target_include_directories(lp95 PRIVATE ${LAPACK95_INCLUDE_DIRS})
+
+if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
+  target_sources(lp95 PRIVATE DemoLapack95_MKL.f90)
+else()
+  target_sources(lp95 PRIVATE DemoLapack95.f90)
+endif()
 
 add_test(NAME Lapack95 COMMAND lp95)
 

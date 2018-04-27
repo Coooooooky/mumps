@@ -3,7 +3,7 @@ program DemoLapack95
 use, intrinsic:: ieee_arithmetic, only: ieee_is_finite
 use, intrinsic:: iso_fortran_env, only: wp=>real64, stderr=>error_unit
 use assert, only: assert_isclose
-use f95_lapack, only: la_gesvd, la_gesdd
+use f95_lapack, only: la_gesvd=>gesvd
 !use lapack, only: dlamch, sdisna
 
 implicit none
@@ -27,7 +27,7 @@ implicit none
 
 ! print *,A3(1,:)
 
-  call la_gesvd(A3,S3, info=ierr)
+  call gesvd(A3,S3, info=ierr)
   if (ierr/=0) error stop 'convergence error LAPACK95 SVD accuracy example'
   call error_analysis(A3,S3)
   call assert_isclose(S3, [21.0493811_wp,2.3702096_wp,1.1426562_wp], err_msg="LAPACK95 convergence example")
@@ -38,7 +38,7 @@ implicit none
 
 
 !-------------- Matlab example
-  call la_gesvd(A2,S2, info=ierr)
+  call gesvd(A2,S2, info=ierr)
   if (ierr/=0) error stop 'convergence error LAPACK95 Matlab example'
   call assert_isclose(S2, [2.8284_wp,1._wp,0._wp],  err_msg="LAPACK95 Matlab example")
   call error_analysis(A2,S2)
