@@ -6,7 +6,7 @@ set -e
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1 
 
-## LAPACK95
+## LAPACK95   (N.B. included in Intel MKL)
 (cd LAPACK95/
 
 [[ $CLEAN == 1 ]] && make clean -C SRC

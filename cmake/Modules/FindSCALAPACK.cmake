@@ -15,10 +15,10 @@ if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
                    $ENV{MKLROOT}/lib/intel64
                    $ENV{INTEL}/mkl/lib/intel64
              NO_DEFAULT_PATH)
-    if(NOT SCALAPACK_{slib}_LIBRARY)
+    if(NOT SCALAPACK_${slib}_LIBRARY)
       message(FATAL_ERROR "NOT FOUND: " ${slib} ${SCALAPACK_${slib}_LIBRARY})
     endif()
-    message(STATUS "Scalapack FOUND: " ${slib} ${SCALAPACK_${slib}_LIBRARY})
+#    message(STATUS "Intel MKL Scalapack FOUND: " ${slib} ${SCALAPACK_${slib}_LIBRARY})
     list(APPEND SCALAPACK_LIBRARY ${SCALAPACK_${slib}_LIBRARY})
     mark_as_advanced(SCALAPACK_${slib}_LIBRARY)
   endforeach()
