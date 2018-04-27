@@ -4,7 +4,17 @@ enable_testing()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake/Modules/")
 
-add_compile_options(-g -fimplicit-none -mtune=native)
+if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
+  # -r8  after literals are fixed to "e" or "wp"
+  add_compile_options(-debug extended -warn -traceback -check all -fp-stack-check -check-bounds)
+elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
+  # -fdefault-real-8  after literals are fixed to "e" or "wp"
+  add_compile_options(-g -mtune=native -fimplicit-none -Wall -Wpedantic -Wextra -Warray-bounds -fexceptions -fbacktrace)
+elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL PGI)
+  add_compile_options(-Mallocatable=03)
+elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Flang) 
+  add_compile_options(-Mallocatable=03)
+endif()
 
 # --- LAPACK 95
 set(LAPACK95_ROOT ../LAPACK95)
