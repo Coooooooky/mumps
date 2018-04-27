@@ -1,4 +1,4 @@
-#!?bin/bash
+#!/bin/bash
 
 # attempt to detect CentOS, default to Ubuntu otherwise
 
