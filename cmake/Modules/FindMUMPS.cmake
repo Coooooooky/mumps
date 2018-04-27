@@ -11,6 +11,8 @@
 #
 #   MUMPS_FOUND    - True if the system has the MUMPS library
 #   MUMPS_VERSION  - The version of the MUMPS library which was found
+#   MUMPS_LIBRARIES - the libraries to be linked
+#   MUMPS_INCLUDE_DIRS - dirs to be included
 
 find_package(LAPACK)
 if (NOT LAPACK_FOUND)
@@ -26,7 +28,15 @@ find_package(Threads REQUIRED)
 add_compile_options(${MPI_Fortran_COMPILE_OPTIONS})
 include_directories(${MPI_Fortran_INCLUDE_DIRS})
 
+#-- METIS
+find_package(METIS REQUIRED)
+#-- Scotch
+find_package(Scotch REQUIRED COMPONENTS ESMUMPS)
+message(STATUS "Scotch Libraries:" ${Scotch_LIBRARIES} ${Scotch_FOUND})
+#-- Scalapack
+find_package(SCALAPACK REQUIRED)
 #-------------------------
+
 
 find_package(PkgConfig)
 pkg_check_modules(PC_MUMPS QUIET MUMPS)
@@ -53,19 +63,33 @@ find_library(PORD NAMES pord HINTS ${MUMPS_DIR})
 
 set(MUMPS_VERSION ${PC_MUMPS_VERSION})
 
+if(DMUMPS)
+  list(APPEND MUMPS_LIBRARIES ${DMUMPS})
+endif()
+if(SMUMPS)
+  list(APPEND MUMPS_LIBRARIES ${SMUMPS})
+endif()
+if(CMUMPS)
+  list(APPEND MUMPS_LIBRARIES ${CMUMPS})
+endif()
+if(ZMUMPS)
+  list(APPEND MUMPS_LIBRARIES ${ZMUMPS})
+endif()
+
+list(APPEND MUMPS_LIBRARIES ${MUMPS_COMMON} ${PORD})
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(MUMPS
     FOUND_VAR MUMPS_FOUND
-    REQUIRED_VARS MUMPS_COMMON MUMPS_INCLUDE_DIR
+    REQUIRED_VARS MUMPS_LIBRARIES MUMPS_INCLUDE_DIR
     VERSION_VAR MUMPS_VERSION)
 
-if(MUMPS_FOUND)
-  set(MUMPS_LIBRARIES ${MUMPS_COMMON} ${DMUMPS} ${SMUMPS} ${CMUMPS} ${ZMUMPS} ${PORD} ${LAPACK_LIBRARIES} ${MPI_Fortran_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}) 
-  set(MUMPS_INCLUDE_DIRS ${MUMPS_INCLUDE_DIR} ${LAPACK_INCLUDE_DIRS})
-  set(MUMPS_DEFINITIONS  ${PC_MUMPS_CFLAGS_OTHER})
-endif()
+  
+list(APPEND MUMPS_LIBRARIES ${METIS_LIBRARIES} ${Scotch_LIBRARIES} ${SCALAPACK_LIBRARIES}  
+                            ${LAPACK_LIBRARIES} ${MPI_Fortran_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}) 
 
+set(MUMPS_INCLUDE_DIRS ${MUMPS_INCLUDE_DIR} ${SCOTCH_INCLUDE_DIRS} ${SCALAPACK_INCLUDE_DIRS} ${LAPACK_INCLUDE_DIRS})
+set(MUMPS_DEFINITIONS  ${PC_MUMPS_CFLAGS_OTHER})
 
 mark_as_advanced(MUMPS_INCLUDE_DIR MUMPS_LIBRARY)
 

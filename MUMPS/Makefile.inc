@@ -6,7 +6,7 @@
 # metis (parmetis), scotch (ptscotch), openmpi, gfortran
 
 # packages installation : 
-# apt-get install libmetis-dev libparmetis-dev libscotch-dev libptscotch-dev libatlas-base-dev openmpi-bin libopenmpi-dev lapack-dev
+# apt install libmetis-dev libparmetis-dev libscotch-dev libptscotch-dev libatlas-base-dev openmpi-bin libopenmpi-dev liblapack-dev
 
 # Begin orderings
 LSCOTCHDIR = /usr/lib
@@ -47,11 +47,13 @@ FL = mpif90
 AR = ar vr 
 RANLIB = ranlib
 LAPACK = -llapack
-SCALAP  = -lscalapack-openmpi -lblacs-openmpi  -lblacsF77init-openmpi -lblacsCinit-openmpi
 
-INCPAR = -I/usr/lib/openmpi/include
+SCALAPDIR = /usr/lib
+SCALAP  = -L$(SCALAPDIR) -lscalapack-openmpi -lblacs-openmpi  -lblacsF77init-openmpi -lblacsCinit-openmpi
 
-LIBPAR = $(SCALAP) $(LAPACK)  -lmpi -lmpi_f77
+INCPAR = -I/usr/lib/x86_64-linux-gnu/openmpi/include/
+
+LIBPAR = $(SCALAP) $(LAPACK)  -lmpi -lmpi_mpifh #-lmpi_f77
 
 INCSEQ = -I$(topdir)/libseq
 LIBSEQ  = $(LAPACK) -L$(topdir)/libseq -lmpiseq

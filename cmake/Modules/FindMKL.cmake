@@ -18,7 +18,7 @@
 #  MKL_CORE_LIBRARY - MKL core library
 #
 #  The environment variables MKLROOT and INTEL are used to find the library.
-#  Everything else is ignored. If MKL is found "-DMKL_ILP64" is added to
+#  Everything else is ignored. If MKL is found "-DMKL_LP64" is added to
 #  CMAKE_C_FLAGS and CMAKE_CXX_FLAGS.
 #
 #  Example usage:
@@ -36,18 +36,18 @@ endif()
 
 if(NOT BUILD_SHARED_LIBS)
   if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
-    set(INT_LIB "libmkl_gf_ilp64.a")
+    set(INT_LIB "libmkl_gf_lp64.a")
   else()
-    set(INT_LIB "libmkl_intel_ilp64.a")
+    set(INT_LIB "libmkl_intel_lp64.a")
   endif()
   set(SEQ_LIB "libmkl_sequential.a")
   set(THR_LIB "libmkl_intel_thread.a")
   set(COR_LIB "libmkl_core.a")
 else()
   if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
-    set(INT_LIB "mkl_gf_ilp64")
+    set(INT_LIB "mkl_gf_lp64")
   else()
-    set(INT_LIB "mkl_intel_ilp64")
+    set(INT_LIB "mkl_intel_lp64")
   endif()
   set(SEQ_LIB "mkl_sequential")
   set(THR_LIB "mkl_intel_thread")
@@ -92,8 +92,8 @@ if (MKL_INCLUDE_DIR AND
       set(ABI "-m64")
     endif()
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMKL_ILP64 ${ABI}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMKL_ILP64 ${ABI}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMKL_LP64 ${ABI}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMKL_LP64 ${ABI}")
 
 else()
 
@@ -108,6 +108,11 @@ endif()
 # Handle the QUIETLY and REQUIRED arguments and set MKL_FOUND to TRUE if
 # all listed variables are TRUE.
 INCLUDE(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(MKL DEFAULT_MSG MKL_LIBRARIES MKL_INCLUDE_DIRS MKL_INTERFACE_LIBRARY MKL_SEQUENTIAL_LAYER_LIBRARY MKL_CORE_LIBRARY)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(MKL DEFAULT_MSG 
+                MKL_LIBRARIES 
+                MKL_INCLUDE_DIRS 
+                MKL_INTERFACE_LIBRARY 
+                MKL_SEQUENTIAL_LAYER_LIBRARY 
+                MKL_CORE_LIBRARY)
 
 MARK_AS_ADVANCED(MKL_INCLUDE_DIRS MKL_LIBRARIES MKL_INTERFACE_LIBRARY MKL_SEQUENTIAL_LAYER_LIBRARY MKL_CORE_LIBRARY)

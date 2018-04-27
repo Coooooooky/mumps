@@ -41,7 +41,6 @@ include Makefile.inc
 
 mumps_lib: requiredobj
 	(cd src ; $(MAKE) $(ARITH))
-	mv src/*.mod include/
 
 cexamples:	c
 	(cd examples ; $(MAKE) c)

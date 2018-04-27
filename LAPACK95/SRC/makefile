@@ -134,14 +134,14 @@ ZOBJS = la_zgesv.o la_zgesv1.o la_zgesvx.o la_zgesvx1.o \
 	la_zgesdd.o
 
 single: $(SOBJSS)
-	rm -f ../lapack95.a
+	$(RM) ../lapack95.a
 	ar cr ../lapack95.a $(SOBJSS)
 	ranlib ../lapack95.a
-	rm -fr ../lapack95_modules
+	$(RM) -r ../lapack95_modules
 	mkdir ../lapack95_modules
 	cp *.mod ../lapack95_modules/
-	rm -f f77_lapack.* f95_lapack.*
-	rm -f *_lapack_single.o
+	$(RM) f77_lapack.* f95_lapack.*
+	$(RM) *_lapack_single.o
 
 double: $(DOBJSS)
 	$(RM) ../lapack95.a
@@ -154,54 +154,54 @@ double: $(DOBJSS)
 	$(RM) *_lapack_double.o
 
 single_double: $(SDOBJS)
-	rm -f ../lapack95.a
+	$(RM) ../lapack95.a
 	ar cr ../lapack95.a $(SDOBJS)
 	ranlib ../lapack95.a
-	rm -fr ../lapack95_modules
+	$(RM) -r ../lapack95_modules
 	mkdir ../lapack95_modules
 	cp *.mod ../lapack95_modules/
-	rm -f f77_lapack.* f95_lapack.*
-	rm -f *_lapack_single_double.o
+	$(RM) f77_lapack.* f95_lapack.*
+	$(RM) *_lapack_single_double.o
 
 single_complex: $(SCOBJS)
-	rm -f ../lapack95.a
+	$(RM) ../lapack95.a
 	ar cr ../lapack95.a $(SCOBJS)
 	ranlib ../lapack95.a
-	rm -fr ../lapack95_modules
+	$(RM) -r ../lapack95_modules
 	mkdir ../lapack95_modules
 	cp *.mod ../lapack95_modules/
-	rm -f f77_lapack.* f95_lapack.*
-	rm -f *_lapack_single_complex.o
+	$(RM) f77_lapack.* f95_lapack.*
+	$(RM) *_lapack_single_complex.o
 
 double_dcomplex: $(DZOBJS)
-	rm -f ../lapack95.a
+	$(RM) ../lapack95.a
 	ar cr ../lapack95.a $(DZOBJS)
 	ranlib ../lapack95.a
-	rm -fr ../lapack95_modules
+	$(RM) -r ../lapack95_modules
 	mkdir ../lapack95_modules
 	cp *.mod ../lapack95_modules/
-	rm -f f77_lapack.* f95_lapack.*
-	rm -f *_lapack_double_dcomplex.o
+	$(RM) f77_lapack.* f95_lapack.*
+	$(RM) *_lapack_double_dcomplex.o
 
 single_double_complex: $(SCDOBJS)
-	rm -f ../lapack95.a
+	$(RM) ../lapack95.a
 	ar cr ../lapack95.a $(SCDOBJS)
 	ranlib ../lapack95.a
-	rm -fr ../lapack95_modules
+	$(RM) -r ../lapack95_modules
 	mkdir ../lapack95_modules
 	cp *.mod ../lapack95_modules/
-	rm -f f77_lapack.* f95_lapack.*
-	rm -f *_lapack_single_double_complex.o
+	$(RM) f77_lapack.* f95_lapack.*
+	$(RM) *_lapack_single_double_complex.o
 
 single_double_complex_dcomplex: $(SCDZOBJS)
-	rm -f ../lapack95.a
+	$(RM) ../lapack95.a
 	ar cr ../lapack95.a $(SCDZOBJS)
 	ranlib ../lapack95.a
-	rm -fr ../lapack95_modules
+	$(RM) -r ../lapack95_modules
 	mkdir ../lapack95_modules
 	'cp' *.mod ../lapack95_modules/
-	rm -f f77_lapack.* f95_lapack.*
-	rm -f *_lapack_single_double_complex_dcomplex.o
+	$(RM) f77_lapack.* f95_lapack.*
+	$(RM) *_lapack_single_double_complex_dcomplex.o
 
 clean: 
 	$(RM) *.a *.o *.mod *.l core
