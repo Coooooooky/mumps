@@ -6,9 +6,9 @@ set -e
 
 ## LAPACK95
 (cd LAPACK95/
-make clean -C SRC "OPTS0=-O3 -fPIC -fno-trapping-math"
+make clean -C SRC 
 
-make double -C SRC FC=ifort
+make double -C SRC FC=ifort "OPTS0=-O3 -fPIC -fno-trapping-math"
 )
 
 ## METIS
