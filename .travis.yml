@@ -1,10 +1,9 @@
 # gfortran >= 6 is required.
-# Ubuntu >= 16.04 needed to build MUMPS
+# Ubuntu >= 16.04 needed to build or use MUMPS with MPI, so have to wait for Travis-CI linux to update to xenial.
 language: c
 fast_finish: true
 
 os:
-  - linux
   - osx
 
 env: FC=gfortran-6
@@ -20,7 +19,7 @@ git:
 addons:
   apt:
     sources: ubuntu-toolchain-r-test
-    packages: ['gfortran-6','liblapack-dev','libmumps-dev']
+    packages: ['gfortran-6','liblapack-dev','libmumps-dev','openmpi-bin','libopenmpi-dev',]
     # for MUMPs build, needs Ubuntu 16.04 'libmetis-dev','libparmetis-dev','libscotch-dev','libptscotch-dev','libatlas-base-dev','openmpi-bin','libopenmpi-dev',
 
 

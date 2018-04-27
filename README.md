@@ -1,4 +1,4 @@
-[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/lo4lftvwo0kghir5?svg=true)](https://ci.appveyor.com/project/scivision/fortran-libs)
+[![Build status](https://ci.appveyor.com/api/projects/status/930wqecxd8xmsd3v?svg=true)](https://ci.appveyor.com/project/scivision/fortran-libs)
 
 [![Travis-CI Build Status](https://travis-ci.org/scivision/fortran-libs.svg)](https://travis-ci.org/scivision/fortran-libs)
 
@@ -12,22 +12,21 @@ These Fortran libraries are copied and only the Makefiles (not the code) lightly
 Please respect the various licenses of these libraries. 
 The MIT license applies only to our convenience build scripts.
 
-A few simple demos / self-tests are included, and are run by:
-```sh
-cd tests/bin
-cmake ..
-make
-make test
-```
 
 Look under `cmake/Modules/Find_____.cmake` to conveniently link these libraries to your project.
 
 
-For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
-
-* Intel `ifort`:  `./build_intel.sh`
-* GNU `gfortran`: `./build_gfortran.sh`
-
+1. For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
+   * Intel `ifort`:  `./build_intel.sh`
+   * GNU `gfortran`: `./build_gfortran.sh`
+2. A few simple demos / self-tests are included for use , and are run by:
+   ```sh
+   cd tests/bin
+   cmake ..
+   make
+   make test
+   ```
+   
 ## LAPACK95
 To build 
 [LAPACK95](http://www.netlib.org/lapack95/)
