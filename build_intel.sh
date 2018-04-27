@@ -4,22 +4,28 @@
 
 set -e
 
+[[ $1 == -k ]] && CLEAN=0 || CLEAN=1 
+
 ## LAPACK95
 (cd LAPACK95/
-make clean -C SRC 
 
-make double -C SRC FC=ifort "OPTS0=-O3 -fPIC -fno-trapping-math"
+[[ $CLEAN == 1 ]] && make clean -C SRC
+
+make double -C SRC FC=ifort
 )
 
 ## METIS
 (cd metis
-make clean
-make config FC=ifort
+
+[[ $CLEAN == 1 ]] && { make clean; make config FC=ifort; }
+
 make FC=ifort
 )
 
 ## Scotch
 (cd scotch/src
+[[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
+
 make FC=ifort
 
 cd esmumps
@@ -30,11 +36,11 @@ make FC=ifort
 
 ## MUMPS
 (cd MUMPS
-make clean
 
+[[ $CLEAN == 1 ]] && make clean
 
 make s d FC=ifort \
-     LSCOTCHDIR=../scotch/lib ISCOTCH=-I../scotch/include \
+     LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I/share/pkg/openmpi/3.0.0_intel-2018/install1/include/ \
      LMETISDIR=/share/pkg/metis/5.1.0/install/lib IMETIS=-I/share/pkg/metis/5.1.0/install/include \
      SCALAPDIR=$MKLROOT \
