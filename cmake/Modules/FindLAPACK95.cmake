@@ -16,9 +16,10 @@
 
 if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
 
-  find_path(MKL_INCLUDE_DIR 
+  find_path(LAPACK95_INCLUDE_DIR 
             NAMES lapack95.mod
-            HINTS $ENV{MKLROOT}/include $ENV{MKLROOT}/include/intel64/lp64)
+            HINTS $ENV{MKLROOT}/include 
+                  $ENV{MKLROOT}/include/intel64/lp64)
           
   foreach(slib mkl_blas95_lp64 mkl_lapack95_lp64 mkl_intel_lp64 mkl_sequential mkl_core)
     find_library(LAPACK95_${slib}_LIBRARY
