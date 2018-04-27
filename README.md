@@ -17,7 +17,8 @@ Look under `cmake/Modules/Find_____.cmake` to conveniently link these libraries 
 
 
 1. For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
-   * Intel `ifort`:  `./build_intel.sh`
+   * Intel `ifort` on CentOS: `./build_intel_centos.sh`
+   * Intel `ifort` on Ubuntu: `./build_intel_ubuntu.sh`
    * GNU `gfortran`: `./build_gfortran.sh`
 2. A few simple demos / self-tests are included for use , and are run by:
    ```sh
