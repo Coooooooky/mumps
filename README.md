@@ -8,11 +8,14 @@ Related: [Fortran 2018 examples](https://github.com/scivision/fortran2018-exampl
 
 # Fortran Libraries
 
-These Fortran libraries are copied and Makefiles lightly modified to build easily with Gfortran on a wide variety of systems including Linux, MacOS and Windows.
+These Fortran libraries are copied and only the Makefiles (not the code) lightly modified to build easily with Gfortran on a wide variety of systems including Linux, MacOS and Windows.
+Please respect the various licenses of these libraries. 
+The MIT license applies only to our convenience build scripts.
+
 A few simple demos / self-tests are included, and are run by:
 ```sh
 cd tests/bin
-cmake -DLAPACK95_ROOT=../LAPACK95 -DMUMPS_ROOT=../MUMPS ..
+cmake ..
 make
 make test
 ```
@@ -20,10 +23,10 @@ make test
 Look under `cmake/Modules/Find_____.cmake` to conveniently link these libraries to your project.
 
 
-For Intel compilers, try building all these libraries at once by:
-```sh
-./build_intel.sh
-```
+For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
+
+* Intel `ifort`:  `./build_intel.sh`
+* GNU `gfortran`: `./build_gfortran.sh`
 
 ## LAPACK95
 To build 

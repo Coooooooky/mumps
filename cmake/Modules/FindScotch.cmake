@@ -133,10 +133,4 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Scotch 
           FOUND_VAR Scotch_FOUND
           REQUIRED_VARS Scotch_LIBRARIES Scotch_INCLUDE_DIRS)
-          
-if(Scotch_FOUND)
-  message(STATUS "Found Scotch:" ${Scotch_LIBRARIES} ${Scotch_INCLUDE_DIRS})
-else()
-  message(WARNING "Scotch: NOT FOUND")
-endif()
 

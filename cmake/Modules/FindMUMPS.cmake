@@ -32,7 +32,6 @@ include_directories(${MPI_Fortran_INCLUDE_DIRS})
 find_package(METIS REQUIRED)
 #-- Scotch
 find_package(Scotch REQUIRED COMPONENTS ESMUMPS)
-message(STATUS "Scotch Libraries:" ${Scotch_LIBRARIES} ${Scotch_FOUND})
 #-- Scalapack
 find_package(SCALAPACK REQUIRED)
 #-------------------------
