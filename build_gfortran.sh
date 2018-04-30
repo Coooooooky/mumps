@@ -11,7 +11,7 @@ set -e
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
-make double -C SRC FC=mpif90
+make double -C SRC FC=gfortran
 )
 
 ## METIS
