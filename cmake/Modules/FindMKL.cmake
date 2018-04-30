@@ -34,6 +34,37 @@ if (MKL_INCLUDE_DIRS AND MKL_LIBRARIES AND MKL_INTERFACE_LIBRARY AND
   set (MKL_FIND_QUIETLY TRUE)
 endif()
 
+# MPI
+if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
+  unset(MPI_Fortran_LIBRARIES)
+  unset(MPI_Fortran_INCLUDE_PATH)
+  if(MPI IN_LIST MKL_FIND_COMPONENTS)
+#    message(STATUS "Trying to find Intel MKL MPI libraries under: "  $ENV{MKLROOT})
+    find_path(MPI_Fortran_INCLUDE_PATH 
+              NAMES mpi.h mpif.h
+              HINTS $ENV{MKLROOT}/../mpi/intel64/include)
+              
+    FOREACH(comp mkl_intel_lp64 mkl_intel_thread mkl_core iomp5)
+      find_library(MKL_${comp}_lib
+              NAMES ${comp}
+              PATHS $ENV{MKLROOT}/../compiler/lib/intel64_lin
+                    $ENV{MKLROOT}/lib/intel64           
+              HINTS ${MKLROOT})
+  
+      if(MKL_${comp}_lib)
+        list(APPEND MPI_Fortran_LIBRARIES ${MKL_${comp}_lib})
+        mark_as_advanced(MKL_${comp}_lib)
+      else()
+          message(FATAL_ERROR "did not find " ${MKL_${comp}_lib})
+      endif()
+    ENDFOREACH()
+     
+    list(APPEND MPI_Fortran_LIBRARIES pthread dl m)
+  endif()
+  
+  message(STATUS "Intel MKL MPI libraries: "  ${MPI_Fortran_LIBRARIES})
+endif()
+
 if(NOT BUILD_SHARED_LIBS)
   if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
     set(INT_LIB "libmkl_gf_lp64.a")
@@ -119,6 +150,9 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(MKL DEFAULT_MSG
                 MKL_INCLUDE_DIRS 
                 MKL_INTERFACE_LIBRARY 
                 MKL_SEQUENTIAL_LAYER_LIBRARY 
-                MKL_CORE_LIBRARY)
+                MKL_CORE_LIBRARY
+                MPI_Fortran_LIBRARIES
+                MPI_Fortran_INCLUDE_PATH)
 
-MARK_AS_ADVANCED(MKL_INCLUDE_DIRS MKL_LIBRARIES MKL_INTERFACE_LIBRARY MKL_SEQUENTIAL_LAYER_LIBRARY MKL_CORE_LIBRARY)
+MARK_AS_ADVANCED(MKL_INCLUDE_DIRS MKL_LIBRARIES 
+                MKL_INTERFACE_LIBRARY MKL_SEQUENTIAL_LAYER_LIBRARY MKL_CORE_LIBRARY)

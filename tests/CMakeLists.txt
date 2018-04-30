@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.3)
 project(FortranLibsDemo Fortran C)
 enable_testing()
 
@@ -46,7 +46,7 @@ add_test(NAME Lapack95 COMMAND lp95)
 set(METIS_ROOT ../metis)
 set(Scotch_ROOT ../scotch)
 set(MUMPS_ROOT ../MUMPS)
-find_package(MUMPS)
+find_package(MUMPS COMPONENTS d)
 
 if(MUMPS_FOUND)
   include_directories(${MUMPS_INCLUDE_DIRS})

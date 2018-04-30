@@ -78,7 +78,6 @@ FOREACH(comp ${MUMPS_FIND_COMPONENTS})
     mark_as_advanced(MUMPS_${comp}_lib)
   else()
       message(FATAL_ERROR "did not find" ${MUMPS_${comp}_lib})
-
   endif()
 ENDFOREACH()
 
