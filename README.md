@@ -22,7 +22,7 @@ Look under `cmake/Modules/Find_____.cmake` to conveniently link these libraries 
 2. A few simple demos / self-tests are included for use , and are run by:
    ```sh
    cd tests/bin
-   cmake ..
+   cmake ..    # if using Intel compilers:  FC=mpiifort cmake ..
    make
    make test
    ```
