@@ -17,7 +17,9 @@
 # Inputs:
 #  COMPONENTS  s d c z   list one or more
 
-if(NOT ${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
+if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
+  find_package(MKL COMPONENTS MPI)
+else()
   find_package(LAPACK)
   if (NOT LAPACK_FOUND)
     return()

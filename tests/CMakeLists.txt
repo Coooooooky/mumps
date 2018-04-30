@@ -49,10 +49,9 @@ set(MUMPS_ROOT ../MUMPS)
 find_package(MUMPS COMPONENTS d)
 
 if(MUMPS_FOUND)
-  include_directories(${MUMPS_INCLUDE_DIRS})
-
   add_executable(mumpscfg test_mumps.f90)
   target_link_libraries(mumpscfg PRIVATE ${MUMPS_LIBRARIES})
+  target_include_directories(mumpscfg PRIVATE ${MUMPS_INCLUDE_DIRS})
 
   add_test(NAME MumpsCfg COMMAND mumpscfg)
 endif()
