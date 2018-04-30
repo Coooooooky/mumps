@@ -13,15 +13,21 @@
 #   MUMPS_VERSION  - The version of the MUMPS library which was found
 #   MUMPS_LIBRARIES - the libraries to be linked
 #   MUMPS_INCLUDE_DIRS - dirs to be included
+#
+# Inputs:
+#  COMPONENTS  s d c z   list one or more
 
-find_package(LAPACK)
-if (NOT LAPACK_FOUND)
-  return()
-endif()
-# ----- MPI
-find_package(MPI COMPONENTS Fortran)
-if (NOT MPI_FOUND)
-  return()
+if(NOT ${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
+  find_package(LAPACK)
+  if (NOT LAPACK_FOUND)
+    return()
+  endif()
+
+  # ----- MPI
+  find_package(MPI COMPONENTS Fortran)
+  if (NOT MPI_FOUND)
+    return()
+  endif()
 endif()
 
 find_package(Threads REQUIRED)
@@ -52,28 +58,32 @@ find_library(MUMPS_COMMON
              PATHS ${PC_MUMPS_LIBRARY_DIRS}
              PATH_SUFFIXES MUMPS lib
              HINTS ${MUMPS_ROOT})
-             
-get_filename_component(MUMPS_DIR ${MUMPS_COMMON} DIRECTORY)
-find_library(DMUMPS NAMES dmumps HINTS ${MUMPS_DIR})
-find_library(SMUMPS NAMES smumps HINTS ${MUMPS_DIR})
-find_library(CMUMPS NAMES cmumps HINTS ${MUMPS_DIR})
-find_library(ZMUMPS NAMES zmumps HINTS ${MUMPS_DIR})
-find_library(PORD NAMES pord HINTS ${MUMPS_DIR})
+
+find_library(PORD 
+              NAMES pord 
+              PATH_SUFFIXES MUMPS lib
+              HINTS ${MUMPS_ROOT})
+        
+unset(MUMPS_LIBRARIES)
+
+FOREACH(comp ${MUMPS_FIND_COMPONENTS})
+  find_library(MUMPS_${comp}_lib
+              NAMES ${comp}mumps 
+              PATH_SUFFIXES MUMPS lib
+              HINTS ${MUMPS_ROOT})
+  
+#  message(STATUS "MUMPS finding " ${comp}mumps " in " MUMPS_${thiscomp})
+  if(MUMPS_${comp}_lib)
+    list(APPEND MUMPS_LIBRARIES ${MUMPS_${comp}_lib})
+    mark_as_advanced(MUMPS_${comp}_lib)
+  else()
+      message(FATAL_ERROR "did not find" ${MUMPS_${comp}_lib})
+
+  endif()
+ENDFOREACH()
+
 
 set(MUMPS_VERSION ${PC_MUMPS_VERSION})
-
-if(DMUMPS)
-  list(APPEND MUMPS_LIBRARIES ${DMUMPS})
-endif()
-if(SMUMPS)
-  list(APPEND MUMPS_LIBRARIES ${SMUMPS})
-endif()
-if(CMUMPS)
-  list(APPEND MUMPS_LIBRARIES ${CMUMPS})
-endif()
-if(ZMUMPS)
-  list(APPEND MUMPS_LIBRARIES ${ZMUMPS})
-endif()
 
 list(APPEND MUMPS_LIBRARIES ${MUMPS_COMMON} ${PORD})
 
@@ -100,7 +110,7 @@ endif()
 
 list(APPEND MUMPS_LIBRARIES ${LAPACK_LIBRARIES} ${MPI_Fortran_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}) 
 
-list(APPEND MUMPS_INCLUDE_DIRS ${LAPACK_INCLUDE_DIRS})
+list(APPEND MUMPS_INCLUDE_DIRS ${LAPACK_INCLUDE_DIRS}  ${MPI_Fortran_INCLUDE_PATH})
 
 set(MUMPS_DEFINITIONS  ${PC_MUMPS_CFLAGS_OTHER})
 

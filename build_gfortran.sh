@@ -11,7 +11,7 @@ set -e
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
-make double -C SRC
+make double -C SRC FC=mpif90
 )
 
 ## METIS
@@ -19,17 +19,17 @@ make double -C SRC
 
 [[ $CLEAN == 1 ]] && { make clean; make config; }
 
-make
+make FC=mpif90
 )
 
 ## Scotch
 (cd scotch/src
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
-make
+make FC=mpif90
 
 cd esmumps
-make
+make FC=mpif90
 )
 
 ## Scalapack is included with Intel Fortran
@@ -39,8 +39,7 @@ make
 
 [[ $CLEAN == 1 ]] && make clean
 
-
-make s d \
+make s d FC=mpif90 \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
      SCALAPDIR=../../scalapack \
