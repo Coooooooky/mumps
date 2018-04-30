@@ -3,7 +3,7 @@ program DemoLapack95
 use, intrinsic:: ieee_arithmetic, only: ieee_is_finite
 use, intrinsic:: iso_fortran_env, only: wp=>real64, stderr=>error_unit
 use assert, only: assert_isclose
-use f95_lapack, only: la_gesvd=>gesvd
+use f95_lapack, only: gesvd=>la_gesvd
 !use lapack, only: dlamch, sdisna
 
 implicit none
