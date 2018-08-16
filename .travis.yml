@@ -1,20 +1,16 @@
 # gfortran >= 6 is required.
 # Ubuntu >= 16.04 needed to build or use MUMPS with MPI, so have to wait for Travis-CI linux to update to xenial.
 language: c
-fast_finish: true
-
-os:
-  - osx
-
-env: FC=gfortran-6
-
-# xenial not working 4/17/18
-#dist: xenial
-#sudo: required
 group: travis_latest
 
 git:
   depth: 3
+  quiet: true
+
+os:
+- osx
+
+env: FC=gfortran-6
 
 addons:
   apt:
@@ -26,13 +22,12 @@ addons:
 
 before_install:
 #      brew install mumps;  not yet available
-  - if [[ $TRAVIS_OS_NAME == osx ]]; then
-      brew update > /dev/null;
-      brew install gcc || true;
-      brew link --overwrite gcc;
-      brew install lapack;
-      export FC=gfortran;
-    fi
+- if [[ $TRAVIS_OS_NAME == osx ]]; then
+    brew update > /dev/null;
+    brew install gcc > /dev/null || brew link --overwrite gcc > /dev/null;
+    brew install lapack > /dev/null;
+    export FC=gfortran;
+  fi
 #  openblas open-mpi scalapack;
 # MUMPS works as below, but takes 10 minutes to build on Travis-CI, so I comment out to save Travis-CI resources (nice guy)
 #      brew tap dpo/openblas;
@@ -50,8 +45,8 @@ before_install:
 
 install:
 # Lapack95
-  - cd $TRAVIS_BUILD_DIR/LAPACK95
-  - make -s double -C SRC
+- cd $TRAVIS_BUILD_DIR/LAPACK95
+- make -s double -C SRC
 
 # MUMPS -- waiting for Ubuntu 16.04 on Travis
 # - cd $TRAVIS_BUILD_DIR/MUMPS
@@ -59,10 +54,7 @@ install:
   
   
 script:
-  - cd $TRAVIS_BUILD_DIR/tests/bin
-  - cmake ..
-  - make
-  - make test
-  
-after_failure:
-  - ctest -V
+- cd $TRAVIS_BUILD_DIR/tests/bin
+- cmake ..
+- cmake --build .
+- ctest -V
