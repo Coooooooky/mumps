@@ -1,45 +1,60 @@
 #!/bin/bash
 
-# builds libraries for Intel Fortran
+# builds libraries for Gfortran
 
 set -e
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1 
 
 ## LAPACK95
-(cd LAPACK95/
+(
+cd LAPACK95/
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
+# no -j due to Makefile syntax...
 make double -C SRC FC=gfortran
 )
 
 ## METIS
-(cd metis
+(
+cd metis
 
 [[ $CLEAN == 1 ]] && { make clean; make config; }
 
-make FC=mpif90
+make -j -l4 FC=mpif90
 )
 
 ## Scotch
-(cd scotch/src
+(
+cd scotch/src
+
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
+# no -j due to Makefile syntax (results in missing scotch.h)...
 make FC=mpif90
 
 cd esmumps
-make FC=mpif90
+make -j -l4 FC=mpif90
 )
 
-## Scalapack is included with Intel Fortran
+## Scalapack
+
+(
+cd scalapack/
+
+cmake .
+
+make -j -l4
+
+) 
 
 ## MUMPS
 (cd MUMPS
 
 [[ $CLEAN == 1 ]] && make clean
 
-make s d FC=mpif90 \
+make -j -l4 s d FC=mpif90 \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
      SCALAPDIR=../../scalapack \

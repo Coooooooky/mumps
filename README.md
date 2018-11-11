@@ -12,22 +12,31 @@ These Fortran libraries are copied and only the Makefiles (not the code) lightly
 Please respect the various licenses of these libraries. 
 The MIT license applies only to our convenience build scripts.
 
+## Build Fortran libraries
 
-Look under `cmake/Modules/Find_____.cmake` to conveniently link these libraries to your project.
+For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
+
+* Intel `ifort`: `./build_intel.sh`
+* GNU `gfortran`: `./build_gfortran.sh`
 
 
-1. For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
-   * Intel `ifort`: `./build_intel.sh`
-   * GNU `gfortran`: `./build_gfortran.sh`
-2. A few simple demos / self-tests are included for use , and are run by:
-   ```sh
-   cd tests/bin
-   cmake ..    # if using Intel compilers:  FC=mpiifort cmake ..
-   make
-   make test
-   ```
+## Test libraries
+
+A few simple demos / self-tests are included for use , and are run by:
+```sh
+cd tests/bin
+
+cmake ..    # if using Intel compilers:  FC=mpiifort cmake ..
+
+make
+
+ctest -V
+```
+
+## Per-library notes
+These are only if you want to build one of these libraries, rather than all at once as above.
    
-## LAPACK95
+### LAPACK95
 To build 
 [LAPACK95](http://www.netlib.org/lapack95/)
 library with any Fortran compiler simply:
@@ -40,7 +49,7 @@ make double -C SRC
 which creates `lapack95.a` in `LAPACK95/`  with "double" precision.
 Use "single" or other options described in tne README files under LAPACK95 and LAPACK95/SRC if complex etc. precision is needed.
 
-## MUMPS
+### MUMPS
 
 Instead of compiling, it's often easier to:
 
@@ -62,7 +71,7 @@ MUMPS is available for Linux, OSX and
 on systems where you have to build your own Scalapack, Scotch, etc. you will need to tell Make where to find them.
 See the example `build_gfortran.sh` or `build_intel.sh`.
 
-### OSX
+#### OSX
 
 [Reference](http://mumps.enseeiht.fr/index.php?page=links)
 
@@ -73,7 +82,7 @@ brew options mumps
 brew install mumps
 ```
 
-## Scalapack
+### Scalapack
 Instead of compiling, it's often easier to:
 
 * Ubuntu: `apt install libscalapack-openmpi-dev`
@@ -82,13 +91,13 @@ Instead of compiling, it's often easier to:
 To build Scalapack (and BLACS):
 
 * Ubuntu: `apt install libmetis-dev libparmetis-dev libscotch-dev libptscotch-dev libatlas-base-dev openmpi-bin libopenmpi-dev liblapack-dev`
-* CentOS: ` `
-
-cd scalapack/
-cmake .
-make
-```
-which creates `lib/libscalapack.a`
+* CentOS:
+  ```
+  cd scalapack/
+  cmake .
+  make
+  ```
+  which creates `lib/libscalapack.a`
 
 
 The build can be verified by
@@ -101,7 +110,7 @@ For the program you're building with Scalapack, include it via CMake with a comm
 cmake -DSCALAPACK_ROOT=~/fortran-libs/scalapack ..
 ```
 
-## Scotch
+### Scotch
 
 Instead of compiling, it's often easier to:
 
@@ -118,7 +127,7 @@ cd esmumps
 make
 ```
 
-## Metis
+### Metis
 
 Instead of compiling, it's often easier to:
 
@@ -138,7 +147,7 @@ which creates `libmetis/libmetis.a`
 
 
 ## CMake
-The `cmake/Modules` directory contains several `Find___.cmake` files useful for Fortran libraries in CMake including:
+The [cmake/Modules](./cmake/Modules) directory contains several `Find___.cmake` files useful for Fortran libraries in CMake including:
 
 * [MKL](https://software.intel.com/mkl)
 * [SCALAPACK](http://www.netlib.org/scalapack/)
