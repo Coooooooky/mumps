@@ -1,5 +1,4 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/930wqecxd8xmsd3v?svg=true)](https://ci.appveyor.com/project/scivision/fortran-libs)
-
 [![Travis-CI Build Status](https://travis-ci.org/scivision/fortran-libs.svg)](https://travis-ci.org/scivision/fortran-libs)
 
 Related: [Fortran 2018 examples](https://github.com/scivision/fortran2018-examples)
@@ -16,8 +15,14 @@ The MIT license applies only to our convenience build scripts.
 
 For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort) by rebuilding all these libraries.
 
-* Intel `ifort`: `./build_intel.sh`
-* GNU `gfortran`: `./build_gfortran.sh`
+### Intel `ifort`:
+For `ifort` users,  `./build_intel.sh` builds the necessary libraries, using ScalaPACK including with ifort.
+
+### GNU Gfortran
+
+GNU `gfortran` libraries are built with `./build_gfortran.sh`
+
+It requires `gfortran liblapack-dev libopenmpi-dev`
 
 
 ## Test libraries

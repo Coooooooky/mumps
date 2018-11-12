@@ -1,22 +1,24 @@
 # gfortran >= 6 is required.
-# Ubuntu >= 16.04 needed to build or use MUMPS with MPI, so have to wait for Travis-CI linux to update to xenial.
+# Ubuntu >= 16.04 needed to build or use MUMPS with MPI
 language: c
 group: travis_latest
+dist: xenial
 
 git:
   depth: 3
   quiet: true
 
 os:
-- osx
+# - osx  # works, just saving resources
+- linux
 
 env: FC=gfortran-6
 
 addons:
   apt:
     sources: ubuntu-toolchain-r-test
-    packages: ['gfortran-6','liblapack-dev','libmumps-dev','openmpi-bin','libopenmpi-dev',]
-    # for MUMPs build, needs Ubuntu 16.04 'libmetis-dev','libparmetis-dev','libscotch-dev','libptscotch-dev','libatlas-base-dev','openmpi-bin','libopenmpi-dev',
+    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev','libmumps-dev']
+    # MUMPs build, needs Ubuntu 16.04 'libmetis-dev','libparmetis-dev','libscotch-dev','libptscotch-dev','libatlas-base-dev','openmpi-bin','libopenmpi-dev',
 
 
 
@@ -44,14 +46,7 @@ before_install:
     
 
 install:
-# Lapack95
-- cd $TRAVIS_BUILD_DIR/LAPACK95
-- make -s double -C SRC
-
-# MUMPS -- waiting for Ubuntu 16.04 on Travis
-# - cd $TRAVIS_BUILD_DIR/MUMPS
-# - make -s d
-  
+- ./build_gfortran.sh  
   
 script:
 - cd $TRAVIS_BUILD_DIR/tests/bin

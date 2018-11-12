@@ -62,7 +62,7 @@ endef
 
 all clean install:
 	@if [ ! -f $(BUILDDIR)/Makefile ]; then \
-		more BUILD.txt; \
+		cat BUILD.txt; \
 	else \
 	  	make -C $(BUILDDIR) $@ $(MAKEFLAGS); \
 	fi

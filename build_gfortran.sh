@@ -4,10 +4,14 @@
 
 set -e
 
-[[ $1 == -k ]] && CLEAN=0 || CLEAN=1 
+[[ $1 == -k ]] && CLEAN=0 || CLEAN=1
+
+BUILDLAPACK95=0
 
 ## LAPACK95
 (
+[[ $BUILDLAPACK95 != 1 ]] && exit
+
 cd LAPACK95/
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
@@ -43,18 +47,20 @@ make -j -l4 FC=mpif90
 (
 cd scalapack/
 
-cmake .
+[[ $CLEAN == 1 ]] && make clean
+
+cmake -Wno-dev .
 
 make -j -l4
-
-) 
+)
 
 ## MUMPS
 (cd MUMPS
 
 [[ $CLEAN == 1 ]] && make clean
 
-make -j -l4 s d FC=mpif90 \
+# no -j due to Makefile...
+make s d FC=mpif90 \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
      SCALAPDIR=../../scalapack \
