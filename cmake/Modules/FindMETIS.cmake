@@ -13,7 +13,7 @@
 #   METIS_FOUND    - True if the system has the METIS library
 #   METIS_VERSION  - The version of the METIS library which was found
 
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 pkg_check_modules(PC_METIS QUIET METIS)
 
 
