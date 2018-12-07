@@ -9,8 +9,17 @@ export CC=icc CXX=icpc
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1 
 
+BUILDLAPACK95=0
+BUILDMETIS=0
+BUILDSCOTCH=1
+
+
 ## LAPACK95   (N.B. included in Intel MKL)
-(cd LAPACK95/
+(
+[[ $BUILDLAPACK95 != 1 ]] && exit
+
+cd LAPACK95/
+
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
@@ -18,15 +27,24 @@ make double -C SRC FC=mpiifort OPTS0="-O3 -fPIC -fno-trapping-math"
 )
 
 ## METIS
-(cd metis
+(
+[[ $BUILDMETIS != 1 ]] && exit
+
+cd metis
 
 [[ $CLEAN == 1 ]] && { make clean; make config CC=icc CXX=icpc; }
 
-make
+make -j -l4 FC=mpiifort
+
 )
 
 ## Scotch
-(cd scotch/src
+(
+
+[[ $BUILDSCOTCH != 1 ]] && exit
+
+cd scotch/src
+
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
 make FC=mpiifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
