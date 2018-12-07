@@ -2,6 +2,8 @@
 
 # builds libraries for Gfortran
 
+MKLROOT=
+
 set -e
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1

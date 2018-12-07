@@ -5,6 +5,9 @@
 
 set -e
 
+. $MKLROOT/../bin/compilervars.sh intel64
+. $MKLROOT/bin/mklvars.sh intel64 ilp64
+
 export CC=icc CXX=icpc
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1 

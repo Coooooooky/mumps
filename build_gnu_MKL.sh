@@ -4,6 +4,9 @@
 
 set -e
 
+. $MKLROOT/../bin/compilervars.sh intel64
+. $MKLROOT/bin/mklvars.sh intel64 ilp64
+
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
