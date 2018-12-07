@@ -23,7 +23,7 @@ cd LAPACK95/
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
-make double -C SRC FC=mpiifort OPTS0="-O3 -fPIC -fno-trapping-math"
+make double -C SRC FC=mpifort OPTS0="-O3 -fPIC -fno-trapping-math"
 )
 
 ## METIS
@@ -34,7 +34,7 @@ cd metis
 
 [[ $CLEAN == 1 ]] && { make clean; make config CC=icc CXX=icpc; }
 
-make -j -l4 FC=mpiifort
+make -j -l4 FC=mpifort
 
 )
 
@@ -47,10 +47,10 @@ cd scotch/src
 
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
-make FC=mpiifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
+make FC=mpifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
 
 cd esmumps
-make FC=mpiifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
+make FC=mpifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
 )
 
 ## Scalapack is included with Intel Fortran
@@ -63,7 +63,7 @@ SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread 
 
 if [[ -f /etc/redhat-release ]]; then
 
-  make s d FC=mpiifort CC=icc CXX=icpc \
+  make s d FC=mpifort CC=icc CXX=icpc \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I/share/pkg/openmpi/3.0.0_intel-2018/install1/include/ \
      LMETISDIR=/share/pkg/metis/5.1.0/install/lib IMETIS=-I/share/pkg/metis/5.1.0/install/include \
@@ -72,12 +72,12 @@ if [[ -f /etc/redhat-release ]]; then
 
 else
 
-  make s d FC=mpiifort CC=icc CXX=icpc \
+  make s d FC=mpifort CC=icc CXX=icpc \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I$HOME/intel/compilers_and_libraries/linux/mpi/intel64/include/ \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
      SCALAPDIR=$MKLROOT \
      SCALAP=$SCALAP
 
-fi     
+fi
 )
