@@ -50,7 +50,7 @@ cd scotch/src
 make FC=mpifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
 
 cd esmumps
-make FC=mpifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
+make -j -l4 FC=mpifort CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
 )
 
 ## Scalapack is included with Intel Fortran

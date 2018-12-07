@@ -7,6 +7,9 @@ set -e
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
+BUILDMETIS=1
+BUILDSCOTCH=1
+BUILDSCALAPACK=1
 
 ## LAPACK95
 (
@@ -17,34 +20,39 @@ cd LAPACK95/
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
 # no -j due to Makefile syntax...
-make double -C SRC FC=gfortran
+make double -C SRC FC=mpifort
 )
 
 ## METIS
 (
+[[ $BUILDMETIS != 1 ]] && exit
 cd metis
 
 [[ $CLEAN == 1 ]] && { make clean; make config; }
 
-make -j -l4 FC=mpif90
+make -j -l4 FC=mpifort
 )
 
 ## Scotch
 (
+[[ $BUILDSCOTCH != 1 ]] && exit
 cd scotch/src
 
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
 # no -j due to Makefile syntax (results in missing scotch.h)...
-make FC=mpif90
+make FC=mpifort
 
 cd esmumps
-make -j -l4 FC=mpif90
+make -j -l4 FC=mpifort
 )
 
 ## Scalapack
 
 (
+
+[[ $BUILDSCALAPACK != 1 ]] && exit
+
 cd scalapack/
 
 [[ $CLEAN == 1 ]] && make clean
