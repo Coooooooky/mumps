@@ -42,7 +42,8 @@ if [[ $CLEAN == 1 ]]
 then
 rm -rf build/*
 make clean
-make config FC=mpif90 CC=icc CXX=icpc
+# this needs to be shared for intel to prevent MUMPS linking errors
+make config shared=1 FC=mpif90 CC=icc CXX=icpc
 fi
 
 make -j -l4 FC=mpif90
