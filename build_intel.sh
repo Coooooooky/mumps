@@ -5,6 +5,9 @@
 
 set -e
 
+# if MKLROOT is not defined, try a default value
+[[ -v MKLROOT ]] || export MKLROOT=$HOME/intel/compilers_and_libraries/linux/bin/
+
 . $MKLROOT/../bin/compilervars.sh intel64
 . $MKLROOT/bin/mklvars.sh intel64 ilp64
 
