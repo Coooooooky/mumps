@@ -8,9 +8,9 @@ set -e
 [[ -v MKLROOT ]] || export MKLROOT=$HOME/intel/compilers_and_libraries/linux/bin/
 
 . $MKLROOT/../bin/compilervars.sh intel64
-. $MKLROOT/bin/mklvars.sh intel64 ilp64
+. $MKLROOT/bin/mklvars.sh intel64 lp64
 
-export FC=mpif90 CC=mpicc
+export FC=/usr/bin/mpif90 CC=/usr/bin/mpicc
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
@@ -27,7 +27,7 @@ cd LAPACK95/
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
 # no -j due to Makefile syntax...
-make double -C SRC FC=mpif90
+make double -C SRC FC=$FC
 )
 
 ## METIS
@@ -35,9 +35,14 @@ make double -C SRC FC=mpif90
 [[ $BUILDMETIS != 1 ]] && exit
 cd metis
 
-[[ $CLEAN == 1 ]] && { make clean; make config; }
+if [[ $CLEAN == 1 ]]
+then
+rm -rf build/*
+make clean
+make config
+fi
 
-make -j -l4 FC=mpif90
+make -j -l4 FC=$FC
 )
 
 ## Scotch
@@ -48,10 +53,10 @@ cd scotch/src
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
 # no -j due to Makefile syntax (results in missing scotch.h)...
-make FC=mpif90
+make FC=$FC
 
 cd esmumps
-make -j -l4 FC=mpif90
+make -j -l4 FC=$FC
 )
 
 ## Scalapack included in MKL
@@ -64,7 +69,7 @@ SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread 
 [[ $CLEAN == 1 ]] && make clean
 
 # no -j due to Makefile...
-make s d FC=mpif90 \
+make s d FC=$FC \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \

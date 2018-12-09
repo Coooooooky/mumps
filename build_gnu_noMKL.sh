@@ -30,7 +30,12 @@ make double -C SRC FC=mpifort
 [[ $BUILDMETIS != 1 ]] && exit
 cd metis
 
-[[ $CLEAN == 1 ]] && { make clean; make config; }
+if [[ $CLEAN == 1 ]]
+then
+rm -rf build/*
+make clean
+make config
+fi
 
 make -j -l4 FC=mpifort
 )

@@ -9,7 +9,7 @@ set -e
 [[ -v MKLROOT ]] || export MKLROOT=$HOME/intel/compilers_and_libraries/linux/bin/
 
 . $MKLROOT/../bin/compilervars.sh intel64
-. $MKLROOT/bin/mklvars.sh intel64 ilp64
+. $MKLROOT/bin/mklvars.sh intel64 lp64
 
 export FC=mpif90 CC=mpicc CXX=icpc
 
@@ -38,7 +38,12 @@ make double -C SRC FC=mpif90 OPTS0="-O3 -fPIC -fno-trapping-math"
 
 cd metis
 
-[[ $CLEAN == 1 ]] && { make clean; make config FC=mpif90 CC=icc CXX=icpc; }
+if [[ $CLEAN == 1 ]]
+then
+rm -rf build/*
+make clean
+make config FC=mpif90 CC=icc CXX=icpc
+fi
 
 make -j -l4 FC=mpif90
 
