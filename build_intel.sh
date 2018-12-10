@@ -11,8 +11,9 @@ set -e
 . $MKLROOT/../bin/compilervars.sh intel64
 . $MKLROOT/bin/mklvars.sh intel64 lp64
 
-export FC=$MKLROOT/../mpi/intel64/bin/mpif90 
-export CC=$MKLROOT/../mpi/intel64/bin/mpicc 
+# DO NOT change to mpif90 or mpicc as that would use GNU compilers!!!
+export FC=$MKLROOT/../mpi/intel64/bin/mpiifort
+export CC=$MKLROOT/../mpi/intel64/bin/mpiicc
 export CXX=icpc
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
@@ -77,7 +78,9 @@ SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread 
 
 if [[ -f /etc/redhat-release ]]; then
 
-  make s d FC=$FC CC=$CC CXX=icpc \
+  make s d FC=$FC FL=$FC CC=$CC CXX=icpc \
+     LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
+     LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I/share/pkg/openmpi/3.0.0_intel-2018/install1/include/ \
      LMETISDIR=/share/pkg/metis/5.1.0/install/lib IMETIS=-I/share/pkg/metis/5.1.0/install/include \
@@ -86,7 +89,10 @@ if [[ -f /etc/redhat-release ]]; then
 
 else
 
-  make s d FC=$FC CC=$CC CXX=icpc \
+  make s d FC=$FC FL=$FC CC=$CC CXX=icpc \
+     OPTF=-qopenmp OPTL=-qopenmp OPTC=-qopenmp \
+     LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
+     LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
