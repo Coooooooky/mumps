@@ -4,6 +4,8 @@
 
 MKLROOT=
 
+FC=/usr/bin/mpif90
+
 set -e
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
@@ -22,7 +24,7 @@ cd LAPACK95/
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
 # no -j due to Makefile syntax...
-make double -C SRC FC=mpifort
+make double -C SRC FC=$FC
 )
 
 ## METIS
@@ -37,7 +39,7 @@ make clean
 make config
 fi
 
-make -j -l4 FC=mpifort
+make -j -l4 FC=$FC
 )
 
 ## Scotch
@@ -48,10 +50,10 @@ cd scotch/src
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
 # no -j due to Makefile syntax (results in missing scotch.h)...
-make FC=mpifort
+make FC=$FC
 
 cd esmumps
-make -j -l4 FC=mpifort
+make -j -l4 FC=$FC
 )
 
 ## Scalapack
