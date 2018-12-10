@@ -11,9 +11,11 @@ set -e
 . $MKLROOT/../bin/compilervars.sh intel64
 . $MKLROOT/bin/mklvars.sh intel64 lp64
 
-export FC=mpif90 CC=mpicc CXX=icpc
+export FC=$MKLROOT/../mpi/intel64/bin/mpif90 
+export CC=$MKLROOT/../mpi/intel64/bin/mpicc 
+export CXX=icpc
 
-[[ $1 == -k ]] && CLEAN=0 || CLEAN=1 
+[[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
 BUILDMETIS=1
@@ -29,7 +31,7 @@ cd LAPACK95/
 
 [[ $CLEAN == 1 ]] && make clean -C SRC
 
-make double -C SRC FC=mpif90 OPTS0="-O3 -fPIC -fno-trapping-math"
+make double -C SRC FC=$FC OPTS0="-O3 -fPIC -fno-trapping-math"
 )
 
 ## METIS
@@ -43,10 +45,10 @@ then
 rm -rf build/*
 make clean
 # this needs to be shared for intel to prevent MUMPS linking errors
-make config shared=1 FC=mpif90 CC=icc CXX=icpc
+make config shared=1 FC=$FC CC=$CC CXX=icpc
 fi
 
-make -j -l4 FC=mpif90
+make -j -l4 FC=$FC
 
 )
 
@@ -59,10 +61,10 @@ cd scotch/src
 
 [[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
 
-make FC=mpif90 CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
+make FC=$FC CC=$CC CCS=icc CCD=icc CCP=$CC CXX=icpc
 
 cd esmumps
-make -j -l4 FC=mpif90 CC=icc CCS=icc CCD=icc CCP=mpiicc CXX=icpc
+make -j -l4 FC=$FC CC=icc CCS=icc CCD=icc CCP=$CC CXX=icpc
 )
 
 ## Scalapack is included with Intel Fortran
@@ -75,7 +77,7 @@ SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread 
 
 if [[ -f /etc/redhat-release ]]; then
 
-  make s d FC=mpif90 CC=icc CXX=icpc \
+  make s d FC=$FC CC=$CC CXX=icpc \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I/share/pkg/openmpi/3.0.0_intel-2018/install1/include/ \
      LMETISDIR=/share/pkg/metis/5.1.0/install/lib IMETIS=-I/share/pkg/metis/5.1.0/install/include \
@@ -84,7 +86,7 @@ if [[ -f /etc/redhat-release ]]; then
 
 else
 
-  make s d FC=mpif90 CC=icc CXX=icpc \
+  make s d FC=$FC CC=$CC CXX=icpc \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
