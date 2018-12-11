@@ -19,8 +19,8 @@ export CXX=icpc
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDMETIS=1
-BUILDSCOTCH=1
+BUILDMETIS=0
+BUILDSCOTCH=0
 
 
 ## LAPACK95   (N.B. included in Intel MKL)
@@ -93,11 +93,15 @@ else
      OPTF=-qopenmp OPTL=-qopenmp OPTC=-qopenmp \
      LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
-     LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
-     LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
      SCALAPDIR=$MKLROOT \
-     SCALAP=$SCALAP
+     SCALAP=$SCALAP \
+     LSCOTCHDIR= ISCOTCH= \
+     LMETISDIR= IMETIS= \
+     ORDERINGSF=-Dpord
+     
+     #LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
+     #LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
 
 fi
 )
