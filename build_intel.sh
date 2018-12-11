@@ -90,7 +90,6 @@ if [[ -f /etc/redhat-release ]]; then
 else
 
   make s d FC=$FC FL=$FC CC=$CC CXX=icpc \
-     OPTF=-qopenmp OPTL=-qopenmp OPTC=-qopenmp \
      LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
@@ -100,6 +99,7 @@ else
      LMETISDIR= IMETIS= \
      ORDERINGSF=-Dpord
      
+     #     OPTF=-qopenmp OPTL=-qopenmp OPTC=-qopenmp \
      #LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      #LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
 
