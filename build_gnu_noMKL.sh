@@ -4,15 +4,15 @@
 
 MKLROOT=
 
-FC=/usr/bin/mpif90
+export FC=/usr/bin/mpif90
 
 set -e
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDMETIS=1
-BUILDSCOTCH=1
+BUILDMETIS=0
+BUILDSCOTCH=0
 BUILDSCALAPACK=1
 
 ## LAPACK95
@@ -77,7 +77,7 @@ make -j -l4
 [[ $CLEAN == 1 ]] && make clean
 
 # no -j due to Makefile...
-make s d FC=mpif90 \
+make s d FC=$FC \
      LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
      LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
      SCALAPDIR=../../scalapack \
