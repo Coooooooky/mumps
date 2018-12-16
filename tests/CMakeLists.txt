@@ -44,7 +44,6 @@ if(LAPACK95_FOUND)
 endif()
 # --- MUMPS
 # making MUMPS optional since MacOS Travis-CI takes 10 minutes to brew install mumps.
-set(Scotch_ROOT ../scotch)
 set(MUMPS_ROOT ../MUMPS)
 find_package(MUMPS COMPONENTS d)
 

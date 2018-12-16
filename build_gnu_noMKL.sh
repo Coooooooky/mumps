@@ -11,7 +11,6 @@ set -e
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDSCOTCH=0
 BUILDSCALAPACK=1
 
 ## LAPACK95
@@ -26,20 +25,6 @@ cd LAPACK95/
 make double -C SRC FC=$FC
 )
 
-
-## Scotch
-(
-[[ $BUILDSCOTCH != 1 ]] && exit
-cd scotch/src
-
-[[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
-
-# no -j due to Makefile syntax (results in missing scotch.h)...
-make FC=$FC
-
-cd esmumps
-make -j -l4 FC=$FC
-)
 
 ## Scalapack
 

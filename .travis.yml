@@ -18,7 +18,7 @@ addons:
   apt:
     sources: ubuntu-toolchain-r-test
     packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev','libmumps-dev']
-    # MUMPs build, needs Ubuntu 16.04 'libmetis-dev','libparmetis-dev','libscotch-dev','libptscotch-dev','libatlas-base-dev','openmpi-bin','libopenmpi-dev',
+    # MUMPs build, needs Ubuntu 16.04 'libatlas-base-dev','openmpi-bin','libopenmpi-dev',
 
 
 
@@ -46,7 +46,7 @@ before_install:
     
 
 install:
-- ./build_gfortran.sh  
+- ./build_gnu_noMKL.sh  
   
 script:
 - cd $TRAVIS_BUILD_DIR/tests/bin

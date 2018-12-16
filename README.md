@@ -95,7 +95,7 @@ Instead of compiling, it's often easier to:
 
 To build Scalapack (and BLACS):
 
-* Ubuntu: `apt install libmetis-dev libparmetis-dev libscotch-dev libptscotch-dev libatlas-base-dev openmpi-bin libopenmpi-dev liblapack-dev`
+* Ubuntu: `apt install libatlas-base-dev openmpi-bin libopenmpi-dev liblapack-dev`
 * CentOS:
   ```
   cd scalapack/
@@ -114,41 +114,6 @@ For the program you're building with Scalapack, include it via CMake with a comm
 ```sh
 cmake -DSCALAPACK_ROOT=~/fortran-libs/scalapack ..
 ```
-
-### Scotch
-
-Instead of compiling, it's often easier to:
-
-* Ubuntu: `apt install libscotch-dev`
-* CentOS: `yum install scotch`
-
-Otherwise you can compile Scotch by:
-
-```sh
-cd scotch/src
-make
-
-cd esmumps
-make
-```
-
-### Metis
-
-Instead of compiling, it's often easier to:
-
-* Ubuntu: `apt install libmetis-dev`
-* CentOS: `yum install metis`
-
-Otherwise you can compile Metis by:
-
-```sh
-cd metis
-make config
-make
-```
-
-which creates `libmetis/libmetis.a`
-
 
 
 ## CMake

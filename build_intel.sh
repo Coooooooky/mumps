@@ -19,7 +19,6 @@ export CXX=icpc
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDSCOTCH=0
 
 
 ## LAPACK95   (N.B. included in Intel MKL)
@@ -34,21 +33,6 @@ cd LAPACK95/
 make double -C SRC FC=$FC OPTS0="-O3 -fPIC -fno-trapping-math"
 )
 
-
-## Scotch
-(
-
-[[ $BUILDSCOTCH != 1 ]] && exit
-
-cd scotch/src
-
-[[ $CLEAN == 1 ]] && { make clean; cd esmumps; make clean; cd ..; }
-
-make FC=$FC CC=$CC CCS=icc CCD=icc CCP=$CC CXX=icpc
-
-cd esmumps
-make -j -l4 FC=$FC CC=icc CCS=icc CCD=icc CCP=$CC CXX=icpc
-)
 
 ## Scalapack is included with Intel Fortran
 
