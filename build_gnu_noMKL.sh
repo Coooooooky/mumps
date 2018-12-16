@@ -10,20 +10,7 @@ set -e
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
-BUILDLAPACK95=0
 BUILDSCALAPACK=1
-
-## LAPACK95
-(
-[[ $BUILDLAPACK95 != 1 ]] && exit
-
-cd LAPACK95/
-
-[[ $CLEAN == 1 ]] && make clean -C SRC
-
-# no -j due to Makefile syntax...
-make double -C SRC FC=$FC
-)
 
 
 ## Scalapack

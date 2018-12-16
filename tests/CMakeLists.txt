@@ -17,31 +17,14 @@ if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
   endif()
   add_compile_options(-warn -traceback -check all -fp-stack-check)
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
-  # -fdefault-real-8  after literals are fixed to "e" or "wp"
   add_compile_options(-mtune=native -fimplicit-none -Wall -Wpedantic -Wextra -Warray-bounds -fexceptions)
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL PGI)
-  add_compile_options(-Mallocatable=03)
+
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Flang) 
   add_compile_options(-Mallocatable=03)
-  link_libraries(-static-flang-libs)
 endif()
 
-# --- LAPACK 95
-set(LAPACK95_ROOT ../LAPACK95)
-find_package(LAPACK95)
-if(LAPACK95_FOUND)
-    add_executable(lp95 assert.f90)
-    target_link_libraries(lp95 PRIVATE ${LAPACK95_LIBRARIES})
-    target_include_directories(lp95 PRIVATE ${LAPACK95_INCLUDE_DIRS})
 
-    if(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
-      target_sources(lp95 PRIVATE DemoLapack95_MKL.f90)
-    else()
-      target_sources(lp95 PRIVATE DemoLapack95.f90)
-    endif()
-
-    add_test(NAME Lapack95 COMMAND lp95)
-endif()
 # --- MUMPS
 # making MUMPS optional since MacOS Travis-CI takes 10 minutes to brew install mumps.
 set(MUMPS_ROOT ../MUMPS)

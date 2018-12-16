@@ -14,20 +14,6 @@ export FC=/usr/bin/mpif90 CC=/usr/bin/mpicc
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
-BUILDLAPACK95=0
-
-## LAPACK95   (N.B. included in Intel MKL, but MKL LAPACK95 needs to be compiled for GNU)
-(
-[[ $BUILDLAPACK95 != 1 ]] && exit
-
-cd LAPACK95/
-
-[[ $CLEAN == 1 ]] && make clean -C SRC
-
-# no -j due to Makefile syntax...
-make double -C SRC FC=$FC
-)
-
 
 ## Scalapack included in MKL
 

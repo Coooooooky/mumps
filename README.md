@@ -41,18 +41,7 @@ ctest -V
 ## Per-library notes
 These are only if you want to build one of these libraries, rather than all at once as above.
    
-### LAPACK95
-To build 
-[LAPACK95](http://www.netlib.org/lapack95/)
-library with any Fortran compiler simply:
-```sh
-cd LAPACK95/
-make clean -C SRC
 
-make double -C SRC 
-```
-which creates `lapack95.a` in `LAPACK95/`  with "double" precision.
-Use "single" or other options described in tne README files under LAPACK95 and LAPACK95/SRC if complex etc. precision is needed.
 
 ### MUMPS
 
