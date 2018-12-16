@@ -19,7 +19,6 @@ export CXX=icpc
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDMETIS=0
 BUILDSCOTCH=0
 
 
@@ -35,23 +34,6 @@ cd LAPACK95/
 make double -C SRC FC=$FC OPTS0="-O3 -fPIC -fno-trapping-math"
 )
 
-## METIS
-(
-[[ $BUILDMETIS != 1 ]] && exit
-
-cd metis
-
-if [[ $CLEAN == 1 ]]
-then
-rm -rf build/*
-make clean
-# this needs to be shared for intel to prevent MUMPS linking errors
-make config shared=1 FC=$FC CC=$CC CXX=icpc
-fi
-
-make -j -l4 FC=$FC
-
-)
 
 ## Scotch
 (
@@ -81,9 +63,9 @@ if [[ -f /etc/redhat-release ]]; then
   make s d FC=$FC FL=$FC CC=$CC CXX=icpc \
      LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
-     LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
+     LSCOTCHDIR= ISCOTCH= \
      INCPAR=-I/share/pkg/openmpi/3.0.0_intel-2018/install1/include/ \
-     LMETISDIR=/share/pkg/metis/5.1.0/install/lib IMETIS=-I/share/pkg/metis/5.1.0/install/include \
+     LMETISDIR= IMETIS= \
      SCALAPDIR=$MKLROOT \
      SCALAP=$SCALAP
 

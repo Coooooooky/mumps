@@ -11,7 +11,6 @@ set -e
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDMETIS=0
 BUILDSCOTCH=0
 BUILDSCALAPACK=1
 
@@ -27,20 +26,6 @@ cd LAPACK95/
 make double -C SRC FC=$FC
 )
 
-## METIS
-(
-[[ $BUILDMETIS != 1 ]] && exit
-cd metis
-
-if [[ $CLEAN == 1 ]]
-then
-rm -rf build/*
-make clean
-make config
-fi
-
-make -j -l4 FC=$FC
-)
 
 ## Scotch
 (
@@ -78,8 +63,8 @@ make -j -l4
 
 # no -j due to Makefile...
 make s d FC=$FC \
-     LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
-     LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
+     LSCOTCHDIR= ISCOTCH= \
+     LMETISDIR= IMETIS= \
      SCALAPDIR=../../scalapack \
      SCALAP='-L$(SCALAPDIR) -lscalapack'
 )

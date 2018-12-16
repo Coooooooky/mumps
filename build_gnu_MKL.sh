@@ -15,7 +15,6 @@ export FC=/usr/bin/mpif90 CC=/usr/bin/mpicc
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 BUILDLAPACK95=0
-BUILDMETIS=0
 BUILDSCOTCH=0
 
 ## LAPACK95   (N.B. included in Intel MKL, but MKL LAPACK95 needs to be compiled for GNU)
@@ -28,21 +27,6 @@ cd LAPACK95/
 
 # no -j due to Makefile syntax...
 make double -C SRC FC=$FC
-)
-
-## METIS
-(
-[[ $BUILDMETIS != 1 ]] && exit
-cd metis
-
-if [[ $CLEAN == 1 ]]
-then
-rm -rf build/*
-make clean
-make config
-fi
-
-make -j -l4 FC=$FC
 )
 
 ## Scotch
@@ -70,9 +54,9 @@ SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread 
 
 # no -j due to Makefile...
 make s d FC=$FC \
-     LSCOTCHDIR=../../scotch/lib ISCOTCH=-I../../scotch/include \
+     LSCOTCHDIR= ISCOTCH= \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
-     LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
+     LMETISDIR= IMETIS= \
      SCALAPDIR=$MKLROOT \
      SCALAP=$SCALAP
 )
