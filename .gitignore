@@ -1,8 +1,6 @@
 Makefile
 
 build/
-scalapack/BLACS/Makefile
-scalapack/BLACS/SRC/Makefile
 
 scalapack/PBLAS/TESTING/
 scalapack/PBLAS/TIMING/
