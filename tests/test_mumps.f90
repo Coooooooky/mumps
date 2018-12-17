@@ -1,18 +1,16 @@
 program test_mumps
 use, intrinsic:: iso_fortran_env, only: output_unit, error_unit
-use mpi
+use mpi_f08, only: mpi_init, mpi_finalize, mpi_comm_world
 
 implicit none
 
-include 'dmumps_struc.h'  ! per MUMPS manual
 
-integer :: ierr
+include 'dmumps_struc.h'  ! per MUMPS manual
 type(DMUMPS_STRUC) :: mumps_par
 
-call mpi_init(ierr)
-if (ierr /= 0) error stop 'MPI init error'
+call mpi_init()
 
-mumps_par%COMM = MPI_COMM_WORLD
+mumps_par%COMM = mpi_comm_world%mpi_val
 mumps_par%JOB = -1
 mumps_par%SYM = 0
 mumps_par%PAR = 1
@@ -28,7 +26,6 @@ mumps_par%icntl(4) = 1           ! default is 2, this reduces verbosity
 
 if (.not. all(mumps_par%icntl(:4) == [0, 6, 6, 1])) error stop 'MUMPS parameters not correctly set'
 
-call mpi_finalize(ierr)
-if (ierr /= 0) error stop "MPI finalize error"
+call mpi_finalize()
 
 end program

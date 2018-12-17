@@ -14,18 +14,9 @@ init:
 
 #- sh: sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" > /dev/null
 #- sh: sudo apt-get -yq update > /dev/null
-- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev > /dev/null
-- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends libatlas-base-dev openmpi-bin libopenmpi-dev  > /dev/null
-- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends libmumps-dev > /dev/null
+- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev openmpi-bin libopenmpi-dev  > /dev/null
 
-install:
-# Lapack95
-- cd $APPVEYOR_BUILD_FOLDER/LAPACK95
-- make -s double -C SRC
-
-# MUMPS
-- sh: cd $APPVEYOR_BUILD_FOLDER/MUMPS
-- sh: make -s d
+install: ./build_gnu_noMKL.sh
   
 test_script:
 - cd $APPVEYOR_BUILD_FOLDER/tests/bin
@@ -34,4 +25,4 @@ test_script:
 - sh: cmake ..
 
 - cmake --build .
-- ctest -V
+- ctest --output-on-failure

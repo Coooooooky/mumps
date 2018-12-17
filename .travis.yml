@@ -17,39 +17,29 @@ env: FC=gfortran-6
 addons:
   apt:
     sources: ubuntu-toolchain-r-test
-    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev','libmumps-dev']
+    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev']
     # MUMPs build, needs Ubuntu 16.04 'libatlas-base-dev','openmpi-bin','libopenmpi-dev',
 
 
+matrix:
+  include:
+  - os: linux
+#  - os: osx
+#    env: FC=gfortran
+#    before_install:
+#    - brew install gcc > /dev/null
+#    - brew install lapack > /dev/null
+#    - brew install open-mpi > /dev/null
 
-before_install:
-#      brew install mumps;  not yet available
-- if [[ $TRAVIS_OS_NAME == osx ]]; then
-    brew update > /dev/null;
-    brew install gcc > /dev/null || brew link --overwrite gcc > /dev/null;
-    brew install lapack > /dev/null;
-    export FC=gfortran;
-  fi
-#  openblas open-mpi scalapack;
-# MUMPS works as below, but takes 10 minutes to build on Travis-CI, so I comment out to save Travis-CI resources (nice guy)
-#      brew tap dpo/openblas;
-#      brew tap-pin dpo/openblas;
-#      brew options mumps;
-#      brew install mumps;
-# takes 15 minutes to setup on Travis for Linux.    
-#  - if [[ $TRAVIS_OS_NAME == linux ]]; then
-#      export HOMEBREW_FORCE_VENDOR_RUBY=1;
-#      sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)";
-#      export PATH="/home/travis/.linuxbrew/bin:$PATH";
-#      brew install gcc opencoarrays;
-#    fi
     
 
-install:
-- ./build_gnu_noMKL.sh  
+install: ./build_gnu_noMKL.sh  
   
 script:
 - cd $TRAVIS_BUILD_DIR/tests/bin
+
 - cmake ..
 - cmake --build .
-- ctest -V
+
+- ctest --output-on-failure
+
