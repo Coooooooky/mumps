@@ -22,16 +22,16 @@ export CXX=icpc
 ## Scalapack is included with Intel Fortran
 
 ## MUMPS
-SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -ldl -lm'
+SCALAP='-L$MKLROOT -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -ldl -lm'
 (cd MUMPS
 
 [[ $CLEAN == 1 ]] && make clean
 
 if [[ -f /etc/redhat-release ]]; then
 
-  make s d FC=$FC FL=$FC CC=$CC CXX=icpc \
-     LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
-     LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
+  make s d FC=$FC FL=$FC CC=$CC CXX=$CXX \
+     LIBBLAS='-L$MKLROOT -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
+     LAPACK='-L$MKLROOT -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      LSCOTCHDIR= ISCOTCH= \
      INCPAR=-I/share/pkg/openmpi/3.0.0_intel-2018/install1/include/ \
      LMETISDIR= IMETIS= \
@@ -40,9 +40,9 @@ if [[ -f /etc/redhat-release ]]; then
 
 else
 
-  make s d FC=$FC FL=$FC CC=$CC CXX=icpc \
-     LIBBLAS='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
-     LAPACK='-L$(MKLROOT) -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
+  make s d FC=$FC FL=$FC CC=$CC CXX=$CXX \
+     LIBBLAS='-L$MKLROOT -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
+     LAPACK='-L$MKLROOT -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core' \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
      SCALAPDIR=$MKLROOT \
      SCALAP=$SCALAP \

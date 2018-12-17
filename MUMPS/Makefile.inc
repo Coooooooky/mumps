@@ -28,7 +28,8 @@ LMETIS    = -L$(LMETISDIR) -lmetis
 
 # Corresponding variables reused later
 #ORDERINGSF = -Dmetis -Dpord -Dparmetis -Dscotch -Dptscotch
-ORDERINGSF = -Dmetis -Dpord -Dscotch
+#ORDERINGSF = -Dmetis -Dpord -Dscotch
+ORDERINGSF = -Dpord
 ORDERINGSC  = $(ORDERINGSF)
 
 LORDERINGS = $(LMETIS) $(LPORD) $(LSCOTCH)

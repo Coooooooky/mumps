@@ -10,7 +10,8 @@ set -e
 . $MKLROOT/../bin/compilervars.sh intel64
 . $MKLROOT/bin/mklvars.sh intel64 lp64
 
-export FC=/usr/bin/mpif90 CC=/usr/bin/mpicc
+export FC=/usr/bin/mpif90 
+export CC=/usr/bin/mpicc
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
@@ -19,17 +20,22 @@ export FC=/usr/bin/mpif90 CC=/usr/bin/mpicc
 
 
 ## MUMPS
-SCALAP='-L$(SCALAPDIR) -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -ldl -lm'
-(cd MUMPS
+
+
+(
+cd MUMPS
 
 [[ $CLEAN == 1 ]] && make clean
 
+SCALAP='-L$MKLROOT -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -ldl -lm'
+
 # no -j due to Makefile...
-make s d FC=$FC \
+make s d FC=$FC FL=$FC CC=$CC \
      LSCOTCHDIR= ISCOTCH= \
      INCPAR=-I$MKLROOT/../mpi/intel64/include/ \
      LMETISDIR= IMETIS= \
      SCALAPDIR=$MKLROOT \
-     SCALAP=$SCALAP
+     SCALAP=$SCALAP \
+     ORDERINGSF=-Dpord
 )
 

@@ -5,6 +5,7 @@
 MKLROOT=
 
 export FC=/usr/bin/mpif90
+export CC=/usr/bin/mpicc
 
 set -e
 
@@ -34,9 +35,10 @@ make -j -l4
 [[ $CLEAN == 1 ]] && make clean
 
 # no -j due to Makefile...
-make s d FC=$FC \
+make s d FC=$FC FL=$FC CC=$CC \
      LSCOTCHDIR= ISCOTCH= \
      LMETISDIR= IMETIS= \
      SCALAPDIR=../../scalapack \
-     SCALAP='-L$(SCALAPDIR) -lscalapack'
+     SCALAP='-L$(SCALAPDIR) -lscalapack' \
+     ORDERINGSF=-Dpord
 )
