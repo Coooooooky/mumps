@@ -3,88 +3,94 @@
 
 # USEMKL: Using MKL with GNU or other compiler
 
+cmake_policy(VERSION 3.3)
+
 unset(SCALAPACK_LIBRARY)
+unset(SCALAPACK_OpenMPI_FOUND)
+unset(SCALAPACK_MPICH_FOUND)
 
-if(USEMKL OR CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
+if(NOT SCALAPACK_FIND_COMPONENTS)
+  set(SCALAPACK_FIND_COMPONENTS OpenMPI)
+endif()
 
-  # FIXME: this would be for threaded
-  # mkl_scalapack_lp64 mkl_intel_lp64 mkl_intel_thread mkl_core mkl_blacs_intelmpi_lp64 iomp5
+function(mkl_scala)
+
+foreach(s ${ARGV})
+  find_library(SCALAPACK_${s}_LIBRARY
+           NAMES ${s}
+           PATHS $ENV{MKLROOT}/lib
+                 $ENV{MKLROOT}/lib/intel64
+                 $ENV{INTEL}/mkl/lib/intel64
+           NO_DEFAULT_PATH)
+  if(NOT SCALAPACK_${s}_LIBRARY)
+    message(FATAL_ERROR "NOT FOUND: " ${s})
+  endif()
   
-  if(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
-    set(slibs mkl_scalapack_lp64 mkl_intel_lp64 mkl_sequential mkl_core mkl_blacs_intelmpi_lp64)
-  else()
-    set(slibs mkl_scalapack_lp64 mkl_gf_lp64 mkl_sequential mkl_core mkl_blacs_openmpi_lp64)
+  list(APPEND SCALAPACK_LIB ${SCALAPACK_${s}_LIBRARY})
+endforeach()
+
+list(APPEND SCALAPACK_LIB pthread ${CMAKE_DL_LIBS} m)
+
+set(SCALAPACK_LIBRARY ${SCALAPACK_LIB} PARENT_SCOPE)
+
+endfunction()
+
+
+
+if(IntelPar IN_LIST SCALAPACK_FIND_COMPONENTS)
+
+  mkl_scala(mkl_scalapack_lp64 mkl_intel_lp64 mkl_intel_thread mkl_core mkl_blacs_intelmpi_lp64 iomp5)
+
+  if(SCALAPACK_LIBRARY)
+    set(SCALAPACK_IntelPar_FOUND true)
   endif()
 
-  # this is for sequential:
-  foreach(slib ${slibs})
-    find_library(SCALAPACK_${slib}_LIBRARY
-             NAMES ${slib}
-             PATHS $ENV{MKLROOT}/lib
-                   $ENV{MKLROOT}/lib/intel64
-                   $ENV{INTEL}/mkl/lib/intel64
-             NO_DEFAULT_PATH)
-    if(NOT SCALAPACK_${slib}_LIBRARY)
-      message(FATAL_ERROR "NOT FOUND: " ${slib})
-    endif()
-    message(STATUS "Intel MKL Scalapack FOUND: " ${slib})
-    list(APPEND SCALAPACK_LIBRARY ${SCALAPACK_${slib}_LIBRARY})
-    mark_as_advanced(SCALAPACK_${slib}_LIBRARY)
-  endforeach()
-  list(APPEND SCALAPACK_LIBRARY pthread ${CMAKE_DL_LIBS} m)
-else()
-  find_package(PkgConfig QUIET)
-  pkg_check_modules(PC_SCALAPACK QUIET SCALAPACK)
+elseif(IntelSeq IN_LIST SCALAPACK_FIND_COMPONENTS)
 
+  mkl_scala(mkl_scalapack_lp64 mkl_intel_lp64 mkl_sequential mkl_core mkl_blacs_intelmpi_lp64)
+
+  if(SCALAPACK_LIBRARY)
+    set(SCALAPACK_IntelSeq_FOUND true)
+  endif()
+
+elseif(MKL IN_LIST SCALAPACK_FIND_COMPONENTS)
+
+  mkl_scala(mkl_scalapack_lp64 mkl_gf_lp64 mkl_sequential mkl_core mkl_blacs_openmpi_lp64)
+
+  if(SCALAPACK_LIBRARY)
+    set(SCALAPACK_MKL_FOUND true)
+  endif()
+  
+elseif(OpenMPI IN_LIST SCALAPACK_FIND_COMPONENTS)
 
   find_library(SCALAPACK_LIBRARY
-               NAMES scalapack scalapack-pvm scalapack-mpi scalapack-mpich scalapack-mpich2 scalapack-openmpi scalapack-lam
-               PATHS ${PC_SCALAPACK_LIBRARY_DIRS}
+               NAMES scalapack scalapack-openmpi
                PATH_SUFFIXES lib)
-
-  set(SCALAPACK_VERSION ${PC_SCALAPACK_VERSION})
-
-  # ======== BLACS
-  # Note: the static compilation of Scalapack with CMake means that BLACS can be entirely within libscalapack.a
-  pkg_check_modules(PC_BLACS QUIET BLACS)
-
-  find_library(BLACS_LIBRARY
-              NAMES blacs blacs-pvm blacs-mpi blacs-openmpi blacsF77init-openmpi blacs-mpich blacs-mpich2 blacs-lam
-              PATHS ${PC_BLACS_LIBRARY_DIRS}
-              PATH_SUFFIXES lib)
-
-  if(BLACS_LIBRARY)
-    set(BLACS_FOUND TRUE)
-
-    find_library(BLACS_OPENMPI 
-                NAMES blacs-openmpi 
-                PATHS ${PC_BLACS_LIBRARY_DIRS}
-                PATH_SUFFIXES lib)
-
-    find_library(BLACS_CINIT 
-                NAMES blacsCinit-openmpi
-                PATHS ${PC_BLACS_LIBRARY_DIRS}
-                PATH_SUFFIXES lib)
-
-    list(APPEND BLACS_LIBRARY ${BLACS_OPENMPI} ${BLACS_CINIT})
-
-    set(BLACS_VERSION ${PC_BLACS_VERSION})
+               
+  if(SCALAPACK_LIBRARY)
+    set(SCALAPACK_OpenMPI_FOUND true)
   endif()
-  set(SCALAPACK_DEFINITIONS  ${PC_SCALAPACK_CFLAGS_OTHER})
+
+elseif(MPICH IN_LIST SCALAPACK_FIND_COMPONENTS)
+  find_library(SCALAPACK_LIBRARY
+               NAMES scalapack-mpich scalapack-mpich2
+               PATH_SUFFIXES lib)
+               
+  if(SCALAPACK_LIBRARY)
+    set(SCALAPACK_MPICH_FOUND true)
+  endif()
+
 endif()
-#=================================================
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SCALAPACK
-    REQUIRED_VARS SCALAPACK_LIBRARY   # don't put BLACS_LIBRARY REQUIRED_VARS because it might be in libscalapack.a
-    VERSION_VAR SCALAPACK_VERSION)
+find_package_handle_standard_args(
+  SCALAPACK
+  REQUIRED_VARS SCALAPACK_LIBRARY
+  HANDLE_COMPONENTS)
 
 if(SCALAPACK_FOUND)
   set(SCALAPACK_LIBRARIES ${SCALAPACK_LIBRARY})
-  if(BLACS_FOUND)
-    set(BLACS_LIBRARIES ${BLACS_LIBRARY})
-    list(APPEND SCALAPACK_LIBRARIES ${BLACS_LIBRARY})
-  endif()
 endif()
 
-mark_as_advanced(SCALAPACK_LIBRARY BLACS_LIBRARY)
+mark_as_advanced(SCALAPACK_LIBRARY)
+
