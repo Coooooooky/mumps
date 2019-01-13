@@ -17,16 +17,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/Modules)
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 
-# FIXME: add option for Scotch, Metis
-if(ORDERING STREQUAL PORD)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../PORD ${CMAKE_CURRENT_BINARY_DIR}/lib)
-  add_compile_definitions("pord")
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../PORD/include)
-  link_libraries(pord)
-endif()
-
 find_package(MPI REQUIRED COMPONENTS Fortran C)
-link_libraries(MPI::MPI_Fortran MPI::MPI_C)
 
 find_package(SCALAPACK REQUIRED)
 
@@ -35,14 +26,23 @@ find_package(SCALAPACK REQUIRED)
 include(${CMAKE_CURRENT_SOURCE_DIR}/sources.cmake)
 
 add_library(mumps_common ${COMM_SRC})
-target_link_libraries(mumps_common ${SCALAPACK_LIBRARIES})
+target_link_libraries(mumps_common ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 
-add_library(cint ${CINT_SRC}) # don't install
+if(ORDERING STREQUAL PORD)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../PORD ${CMAKE_CURRENT_BINARY_DIR}/lib)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../PORD/include)
+  target_link_libraries(mumps_common pord)
+  
+  add_library(ordint ${PORDINT_SRC})
+  target_compile_definitions(ordint PRIVATE "pord")
+endif()
+
+add_library(cint ${CINT_SRC})
 target_compile_definitions(cint PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH})
 
 add_library(${ARITH}mumps ${SRC})
 target_include_directories(${ARITH}mumps PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_link_libraries(${ARITH}mumps cint ${SCALAPACK_LIBRARIES})
+target_link_libraries(${ARITH}mumps cint ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 add_dependencies(${ARITH}mumps mumps_common)
 
 # --- install
