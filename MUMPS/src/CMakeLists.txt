@@ -42,3 +42,6 @@ endif()
 
 install(TARGETS pord mumps_common ${ARITH}mumps
   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include  # no trailing slash!
+  DESTINATION ${CMAKE_INSTALL_PREFIX})
