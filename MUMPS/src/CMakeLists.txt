@@ -11,17 +11,21 @@ endif()
 
 # FIXME: add option for Scotch, Metis
 if(ORDERING STREQUAL PORD)
-  add_compile_definitions(pord)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../PORD ${CMAKE_CURRENT_BINARY_DIR}/lib)
+  add_compile_definitions("pord")
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../PORD/include)
-  link_libraries(${CMAKE_CURRENT_SOURCE_DIR}/../PORD/lib)
+  link_libraries(pord)
 endif()
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/sources.cmake)
+find_package(MPI REQUIRED COMPONENTS Fortran C)
+link_libraries(MPI::MPI_Fortran MPI::MPI_C)
 
-find_package(MPI REQUIRED COMPONENTS Fortran)
-link_libraries(MPI::MPI_Fortran)
+# --- PORD
+
 
 # -- mUMPS BUILD
+include(${CMAKE_CURRENT_SOURCE_DIR}/sources.cmake)
+
 add_library(mumps_common ${COMM_SRC})
 
 add_library(${ARITH}mumps ${SRC})
