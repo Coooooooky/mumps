@@ -37,9 +37,12 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/sources.cmake)
 add_library(mumps_common ${COMM_SRC})
 target_link_libraries(mumps_common ${SCALAPACK_LIBRARIES})
 
+add_library(cint ${CINT_SRC}) # don't install
+target_compile_definitions(cint PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH})
+
 add_library(${ARITH}mumps ${SRC})
 target_include_directories(${ARITH}mumps PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_link_libraries(${ARITH}mumps ${SCALAPACK_LIBRARIES})
+target_link_libraries(${ARITH}mumps cint ${SCALAPACK_LIBRARIES})
 add_dependencies(${ARITH}mumps mumps_common)
 
 # --- install
