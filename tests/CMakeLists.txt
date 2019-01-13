@@ -8,11 +8,18 @@ include(../cmake/compilers.cmake)
 
 find_package(MPI REQUIRED COMPONENTS Fortran)
 
-set(MUMPS_ROOT ../MUMPS)
+find_package(LAPACK REQUIRED)
+find_package(SCALAPACK REQUIRED)
+
+if(NOT MUMPS_ROOT)
+  set(MUMPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../MUMPS)
+endif()
 find_package(MUMPS REQUIRED COMPONENTS d)
 
+message(STATUS MUMPS_INCLUDE_DIRS  ${MUMPS_INCLUDE_DIRS})
+
 add_executable(mumpscfg test_mumps.f90)
-target_link_libraries(mumpscfg PRIVATE ${MUMPS_LIBRARIES} MPI::MPI_Fortran)
+target_link_libraries(mumpscfg PRIVATE ${MUMPS_LIBRARIES} ${SCALAPACK_LIBRARIES} ${LAPACK_LIBRARIES} MPI::MPI_Fortran)
 target_include_directories(mumpscfg PRIVATE ${MUMPS_INCLUDE_DIRS})
 
 add_test(NAME MumpsCfg COMMAND mumpscfg)

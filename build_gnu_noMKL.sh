@@ -20,13 +20,13 @@ BUILDSCALAPACK=1
 
 [[ $BUILDSCALAPACK != 1 ]] && exit
 
-cd scalapack/
+cd scalapack/build
 
 [[ $CLEAN == 1 ]] && make clean
 
-cmake -Wno-dev .
+cmake -Wno-dev ..
 
-make -j -l4
+cmake --build -j . -- -l 4
 )
 
 ## MUMPS
