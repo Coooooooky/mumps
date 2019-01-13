@@ -25,8 +25,10 @@ find_package(SCALAPACK REQUIRED)
 # -- mUMPS BUILD
 include(${CMAKE_CURRENT_SOURCE_DIR}/sources.cmake)
 
+add_library(ioc ${IOC_SRC})
+
 add_library(mumps_common ${COMM_SRC})
-target_link_libraries(mumps_common ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
+target_link_libraries(mumps_common ioc ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 
 if(ORDERING STREQUAL PORD)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../PORD ${CMAKE_CURRENT_BINARY_DIR}/lib)
@@ -38,7 +40,8 @@ if(ORDERING STREQUAL PORD)
 endif()
 
 add_library(cint ${CINT_SRC})
-target_compile_definitions(cint PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH})
+target_compile_definitions(cint PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH} "Add_")
+target_link_libraries(cint PRIVATE MPI::MPI_C)
 
 add_library(${ARITH}mumps ${SRC})
 target_include_directories(${ARITH}mumps PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)

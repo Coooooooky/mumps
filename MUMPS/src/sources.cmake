@@ -1,7 +1,9 @@
 
 set(COMM_SRC lr_common.F ana_omp_m.F ana_orderings_wrappers_m.F mumps_memory_mod.F mumps_static_mapping.F mumps_sol_es.F fac_future_niv2_mod.F mumps_comm_ibcast.F mumps_ooc_common.F double_linked_list.F fac_asm_build_sort_index_m.F fac_asm_build_sort_index_ELT_m.F omp_tps_common_m.F mumps_l0_omp_m.F front_data_mgt_m.F fac_maprow_data_m.F fac_descband_data_m.F fac_ibct_data_m.F
-ana_orderings.F ana_AMDMF.F bcast_errors.F estim_flops.F mumps_type_size.F  mumps_type2_blocking.F  mumps_version.F  tools_common.F  mumps_print_defined.F  
-mumps_common.c mumps_size.c mumps_io.c mumps_io_basic.c mumps_io_thread.c mumps_io_err.c ana_set_ordering.F mumps_numa.c  mumps_thread.c mumps_save_restore_C.c)
+ana_orderings.F ana_AMDMF.F bcast_errors.F estim_flops.F mumps_type_size.F  mumps_type2_blocking.F  mumps_version.F  tools_common.F  mumps_print_defined.F
+mumps_common.c mumps_size.c mumps_io_err.c ana_set_ordering.F mumps_numa.c  mumps_thread.c mumps_save_restore_C.c)
+
+set(IOC_SRC mumps_io.c mumps_io_basic.c mumps_io_thread.c)
 
 set(PORDINT_SRC mumps_pord.c)
 
