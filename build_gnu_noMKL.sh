@@ -20,7 +20,7 @@ BUILDSCALAPACK=1
 
 [[ $BUILDSCALAPACK != 1 ]] && exit
 
-[[ $CLEAN == 1 ]] && rm -r scalapack/build/*
+[[ $CLEAN == 1 ]] && rm -rf scalapack/build/*
 
 cd scalapack/build
 
