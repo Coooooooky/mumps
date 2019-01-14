@@ -20,9 +20,9 @@ BUILDSCALAPACK=1
 
 [[ $BUILDSCALAPACK != 1 ]] && exit
 
-cd scalapack/build
+[[ $CLEAN == 1 ]] && rm -r scalapack/build/*
 
-[[ $CLEAN == 1 ]] && make clean
+cd scalapack/build
 
 cmake -Wno-dev ..
 
@@ -35,6 +35,10 @@ cmake --build -j . -- -l 4
 [[ $CLEAN == 1 ]] && make clean
 
 # no -j due to Makefile...
+
+# Directories for self-compiled LAPACK and BLAS
+# LAPACK=  BLAS=
+
 make s d FC=$FC FL=$FC CC=$CC \
      LSCOTCHDIR= ISCOTCH= \
      LMETISDIR= IMETIS= \

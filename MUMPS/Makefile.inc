@@ -42,12 +42,12 @@ PLAT    =
 LIBEXT  = .a
 OUTC    = -o 
 OUTF    = -o 
-CC = gcc
+CC = mpicc
 FC = mpif90
 FL = mpif90
 AR = ar vr 
 RANLIB = ranlib
-LAPACK = -llapack
+LAPACK = $(LAPACK) -llapack
 
 SCALAPDIR = /usr/lib
 SCALAP  = -L$(SCALAPDIR) -lscalapack-openmpi -lblacs-openmpi  -lblacsF77init-openmpi -lblacsCinit-openmpi
@@ -59,7 +59,7 @@ LIBPAR = $(SCALAP) $(LAPACK)  -lmpi -lmpi_mpifh #-lmpi_f77
 INCSEQ = -I$(topdir)/libseq
 LIBSEQ  = $(LAPACK) -L$(topdir)/libseq -lmpiseq
 
-LIBBLAS = -lblas
+LIBBLAS = $(BLAS) -lblas
 LIBOTHERS = -lpthread
 
 #Preprocessor defs for calling Fortran from C (-DAdd_ or -DAdd__ or -DUPPER)
