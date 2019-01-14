@@ -56,5 +56,5 @@ ORDERINGSF=-Dpord
 # Mumps makefile doesn't have an "install" target so let's do it ourself.
 mkdir -p $MUMPSROOT/{lib,include}
 cp lib/{libpord,lib{s,d}mumps,libmumps_common}.a $MUMPSROOT/lib
-cp include/{s,d}mumps_struc.h include/mumps_compat.h $MUMPSROOT/include/
+cp include/{s,d}mumps*.h include/mumps_compat.h $MUMPSROOT/include/
 )
