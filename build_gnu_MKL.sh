@@ -10,8 +10,11 @@ set -e
 . $MKLROOT/../bin/compilervars.sh intel64
 . $MKLROOT/bin/mklvars.sh intel64 lp64
 
-export FC=/usr/bin/mpif90 
-export CC=/usr/bin/mpicc
+export FC=$(which /usr/bin/mpif90)
+export CC=$(which /usr/bin/mpicc)
+
+echo "FC=$FC"
+echo "CC=$CC"
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 

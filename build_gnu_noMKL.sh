@@ -4,8 +4,11 @@
 
 MKLROOT=
 
-export FC=/usr/bin/mpif90
-export CC=/usr/bin/mpicc
+export FC=$(which mpif90)
+export CC=$(which mpicc)
+
+echo "FC=$FC"
+echo "CC=$CC"
 
 set -e
 
