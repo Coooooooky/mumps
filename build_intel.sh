@@ -3,6 +3,7 @@
 # attempt to detect CentOS, default to Ubuntu otherwise
 # builds libraries for Intel Fortran
 
+set -u
 set -e
 
 # if MKLROOT is not defined, try a default value
@@ -16,10 +17,11 @@ export FC=$MKLROOT/../mpi/intel64/bin/mpiifort
 export CC=$MKLROOT/../mpi/intel64/bin/mpiicc
 export CXX=icpc
 
+echo "FC=$FC"
+echo "CC=$CC"
+
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
-
-## Scalapack is included with Intel Fortran
 
 ## MUMPS
 SCALAP='-L$MKLROOT -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -ldl -lm'

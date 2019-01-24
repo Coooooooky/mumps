@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# builds libraries for Gfortran
-# Note: Currently, Scalapack appears to be incompatible with OpenMPI 4.0. Try OpenMPI 3.1
+# builds MUMPS libraries for Gfortran using all self-compiled OpenMPI, LAPACK, Scalapack
 
 set -e
 set -u
@@ -13,43 +12,28 @@ PREFIX=$1
 SUFFIX=$2
 MPIPREFIX=$3
 LAPACKPREFIX=$4
+SCALAPACKPREFIX=$5
 
 [[ -d $PREFIX ]] || { "Install directory $PREFIX does not exist"; exit 1; }
 [[ -d $MPIPREFIX ]] || { "MPI directory $MPIPREFIX does not exist"; exit 1; }
 [[ -d $LAPACKPREFIX ]] || { "LAPACK directory $LAPACKPREFIX does not exist"; exit 1; }
 
-export SCALAPACKPREFIX=$PREFIX/scalapack-$SUFFIX/
 export MUMPSPREFIX=$PREFIX/mumps-$SUFFIX/
 
 export FC=$MPIPREFIX/bin/mpif90
 export CC=$MPIPREFIX/bin/mpicc
 
+echo "FC=$FC"
+echo "CC=$CC"
+
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
-
-BUILDSCALAPACK=1
-
-
-## Scalapack
-
-(
-
-[[ $BUILDSCALAPACK != 1 ]] && exit
-
-[[ $CLEAN == 1 ]] && rm -rf scalapack/build/*
-
-cd scalapack/build
-
-cmake -Wno-dev -DCMAKE_INSTALL_PREFIX=$SCALAPACKPREFIX -DMPI_ROOT=$MPIPREFIX -DLAPACK_ROOT=$LAPACKPREFIX ..
-
-cmake --build -j . --target install -- -l 4
-)
 
 ## MUMPS
 (cd MUMPS
 
 [[ $CLEAN == 1 ]] && make clean
 
-# no -j due to Makefile...
+# no -j due to old Makefile...
 
 # Directories for self-compiled LAPACK and BLAS
 # LAPACK=  BLAS=

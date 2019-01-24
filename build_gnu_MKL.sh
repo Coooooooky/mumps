@@ -1,7 +1,7 @@
 #!/bin/bash
-
 # builds MKL-based libraries for Gfortran
 
+set -u
 set -e
 
 # if MKLROOT is not defined, try a default value
@@ -18,8 +18,6 @@ echo "CC=$CC"
 
 [[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
-
-## Scalapack included in MKL
 
 
 ## MUMPS
