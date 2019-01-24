@@ -28,18 +28,15 @@ find_path(MUMPS_INCLUDE_DIR
           PATH_SUFFIXES MUMPS include)
 
 find_library(MUMPS_COMMON
-             NAMES mumps_common
-             PATH_SUFFIXES MUMPS lib)
+             NAMES mumps_common)
 
 find_library(PORD
-             NAMES pord
-             PATH_SUFFIXES MUMPS lib)
+             NAMES pord)
 
 
 FOREACH(comp ${MUMPS_FIND_COMPONENTS})
   find_library(MUMPS_${comp}_lib
-              NAMES ${comp}mumps
-              PATH_SUFFIXES MUMPS lib)
+              NAMES ${comp}mumps)
 
   list(APPEND MUMPS_LIBRARY ${MUMPS_${comp}_lib})
   mark_as_advanced(MUMPS_${comp}_lib)

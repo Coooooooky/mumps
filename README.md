@@ -1,4 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/scivision/fortran-libs.svg)](https://travis-ci.org/scivision/fortran-libs)
+[![Build Status](https://travis-ci.org/scivision/mumps.svg?branch=master)](https://travis-ci.org/scivision/mumps)
 [![Build status](https://ci.appveyor.com/api/projects/status/dyonair98wk9u5gv?svg=true)](https://ci.appveyor.com/project/scivision/mumps)
 ---
 
@@ -17,13 +17,18 @@ For convenience, we include build scripts that allow quickly switching compilers
 
 A few simple demos / self-tests are included for use , and are run by:
 ```sh
-cd tests/bin
+cd tests/build
 
 cmake ..    # if using Intel compilers:  FC=mpiifort cmake ..
 
 make
 
 ctest -V
+```
+
+To fully specify libraries, do like:
+```sh
+SCALAPACK_ROOT=~/.local/scalapack-gcc8 MUMPS_ROOT=~/.local/mumps-gcc8 MPI_ROOT=~/.local/openmpi-3.1.3-gcc8/ LAPACK_ROOT=~/.local/lapack-gcc8 FC=gfortran-8  cmake ..
 ```
 
 ## prebuilt

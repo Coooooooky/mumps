@@ -16,8 +16,6 @@ if(NOT MUMPS_ROOT)
 endif()
 find_package(MUMPS REQUIRED COMPONENTS d)
 
-message(STATUS MUMPS_INCLUDE_DIRS  ${MUMPS_INCLUDE_DIRS})
-
 add_executable(mumpscfg test_mumps.f90)
 target_link_libraries(mumpscfg PRIVATE ${MUMPS_LIBRARIES} ${SCALAPACK_LIBRARIES} ${LAPACK_LIBRARIES} MPI::MPI_Fortran)
 target_include_directories(mumpscfg PRIVATE ${MUMPS_INCLUDE_DIRS})

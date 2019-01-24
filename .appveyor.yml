@@ -21,8 +21,9 @@ install: ./build_gnu_noMKL.sh
 test_script:
 - cd $APPVEYOR_BUILD_FOLDER/tests/build
 
-- cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
-- sh: cmake ..
+- cmd: MUMPS_ROOT=$APPVEYOR_BUILD_FOLDER cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
+- sh: MUMPS_ROOT=$APPVEYOR_BUILD_FOLDER cmake ..
 
 - cmake --build .
 - ctest --output-on-failure
+
