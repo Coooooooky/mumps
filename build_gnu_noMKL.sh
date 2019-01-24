@@ -14,16 +14,9 @@ echo "FC=$FC"
 echo "CC=$CC"
 
 
-[[ $1 == -k ]] && CLEAN=0 || CLEAN=1
-
-
 ## MUMPS
-(cd MUMPS
-
-[[ $CLEAN == 1 ]] && make clean
 
 # no -j due to Makefile...
-
 
 make s d FC=$FC FL=$FC CC=$CC \
      LSCOTCHDIR= ISCOTCH= \
@@ -31,4 +24,3 @@ make s d FC=$FC FL=$FC CC=$CC \
      SCALAPDIR=../../scalapack \
      SCALAP='-L$(SCALAPDIR) -lscalapack' \
      ORDERINGSF=-Dpord
-)

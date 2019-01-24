@@ -26,17 +26,10 @@ export CC=$MPIPREFIX/bin/mpicc
 echo "FC=$FC"
 echo "CC=$CC"
 
-[[ $1 == -k ]] && CLEAN=0 || CLEAN=1
 
 ## MUMPS
-(cd MUMPS
-
-[[ $CLEAN == 1 ]] && make clean
 
 # no -j due to old Makefile...
-
-# Directories for self-compiled LAPACK and BLAS
-# LAPACK=  BLAS=
 
 make s d FC=$FC FL=$FC CC=$CC \
 LAPACK=$LAPACKPREFIX BLAS=$LAPACKPREFIX \
@@ -50,4 +43,4 @@ ORDERINGSF=-Dpord
 mkdir -p $MUMPSPREFIX/{lib,include}
 cp lib/{libpord,lib{s,d}mumps,libmumps_common}.a $MUMPSPREFIX/lib
 cp include/{s,d}mumps*.h include/mumps_compat.h $MUMPSPREFIX/include/
-)
+

@@ -20,14 +20,8 @@ export CXX=icpc
 echo "FC=$FC"
 echo "CC=$CC"
 
-[[ $1 == -k ]] && CLEAN=0 || CLEAN=1
-
-
 ## MUMPS
 SCALAP='-L$MKLROOT -lmkl_scalapack_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lmkl_blacs_intelmpi_lp64 -liomp5 -lpthread -ldl -lm'
-(cd MUMPS
-
-[[ $CLEAN == 1 ]] && make clean
 
 if [[ -f /etc/redhat-release ]]; then
 
@@ -57,4 +51,4 @@ else
      #LMETISDIR=../../metis/libmetis IMETIS=-I../../metis/include \
 
 fi
-)
+

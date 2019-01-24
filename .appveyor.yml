@@ -14,12 +14,12 @@ init:
 
 #- sh: sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" > /dev/null
 #- sh: sudo apt-get -yq update > /dev/null
-- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev openmpi-bin libopenmpi-dev  > /dev/null
+- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev openmpi-bin libopenmpi-dev libscalapack-openmpi-dev  > /dev/null
 
 install: ./build_gnu_noMKL.sh
   
 test_script:
-- cd $APPVEYOR_BUILD_FOLDER/tests/bin
+- cd $APPVEYOR_BUILD_FOLDER/tests/build
 
 - cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
 - sh: cmake ..

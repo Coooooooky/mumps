@@ -17,7 +17,7 @@ env: FC=gfortran-6
 addons:
   apt:
     sources: ubuntu-toolchain-r-test
-    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev']
+    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev','libscalapack-dev']
     # MUMPs build, needs Ubuntu 16.04 'libatlas-base-dev','openmpi-bin','libopenmpi-dev',
 
 
@@ -36,7 +36,7 @@ matrix:
 install: ./build_gnu_noMKL.sh  
   
 script:
-- cd $TRAVIS_BUILD_DIR/tests/bin
+- cd $TRAVIS_BUILD_DIR/tests/build
 
 - cmake ..
 - cmake --build .
