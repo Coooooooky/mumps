@@ -12,7 +12,9 @@ if(NOT DEFINED ORDERING)
   set(ORDERING PORD)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/Modules)
+add_compile_definitions("Add_")
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules)
 
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
@@ -25,12 +27,8 @@ find_package(SCALAPACK REQUIRED)
 # -- mUMPS BUILD
 include(${CMAKE_CURRENT_SOURCE_DIR}/sources.cmake)
 
-add_library(ioc ${IOC_SRC})
-target_include_directories(ioc PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-
-add_library(mumps_common ${COMM_SRC})
-target_link_libraries(mumps_common ioc ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
-target_include_directories(mumps_common PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+add_library(mumps_common ${IOC_SRC} ${COMM_SRC})
+target_link_libraries(mumps_common ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 
 if(ORDERING STREQUAL PORD)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../PORD ${CMAKE_CURRENT_BINARY_DIR}/lib)
@@ -42,16 +40,13 @@ if(ORDERING STREQUAL PORD)
   target_include_directories(ordint PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 endif()
 
-add_library(cint ${CINT_SRC})
-target_compile_definitions(cint PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH} "Add_")
-target_link_libraries(cint PRIVATE MPI::MPI_C)
-target_include_directories(cint PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
-add_library(${ARITH}mumps ${SRC})
+add_library(${ARITH}mumps ${CINT_SRC} ${SRC})
+target_compile_definitions(${ARITH}mumps PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH})
 target_include_directories(${ARITH}mumps PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 target_link_libraries(${ARITH}mumps 
 #${ARITH}mumps_load ${ARITH}mumps_ooc ${ARITH}ana_aux_par
-cint ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
+ ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 
 add_dependencies(${ARITH}mumps mumps_common)
 
@@ -67,3 +62,4 @@ install(TARGETS pord mumps_common ${ARITH}mumps
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../include  # no trailing slash!
   DESTINATION ${CMAKE_INSTALL_PREFIX})
+

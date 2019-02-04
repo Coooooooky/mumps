@@ -17,7 +17,7 @@ env: FC=gfortran-6
 addons:
   apt:
     sources: ubuntu-toolchain-r-test
-    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev','libmumps-dev']
+    packages: ['gfortran-6','liblapack-dev','openmpi-bin','libopenmpi-dev']
 
 
 matrix:
@@ -29,6 +29,11 @@ matrix:
 #    - brew install gcc > /dev/null
 #    - brew install lapack > /dev/null
 #    - brew install open-mpi > /dev/null
+
+install:
+- cd $TRAVIS_BUILD_DIR/build
+- cmake ..
+- cmake --build .
 
     
 script:

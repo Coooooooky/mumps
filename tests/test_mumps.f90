@@ -28,4 +28,6 @@ if (.not. all(mumps_par%icntl(:4) == [0, 6, 6, 1])) error stop 'MUMPS parameters
 
 call mpi_finalize()
 
+print *, 'MUMPS OK'
+
 end program
