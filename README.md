@@ -6,12 +6,23 @@
 
 http://mumps.enseeiht.fr/
 
-## Build 
-For convenience, we include build scripts that allow quickly switching compilers (e.g. gfortran, ifort).
+## Build
 
-* Intel `ifort`: `./build_intel.sh`
-* GNU Gfortran: `./build_gnu_noMKL.sh`
-* GNU Gfotran + Intel MKL: `./build_gnu_MKL.sh`
+Meson or CMake can build MUMPS
+
+```sh
+cd build
+meson ..
+ninja
+```
+
+or
+
+```sh
+cd build
+cmake ..
+cmake --build . -j
+```
 
 ## Test libraries
 
@@ -21,7 +32,7 @@ cd tests/build
 
 cmake ..    # if using Intel compilers:  FC=mpiifort cmake ..
 
-make
+cmake --build .
 
 ctest -V
 ```
