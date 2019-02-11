@@ -11,30 +11,17 @@ http://mumps.enseeiht.fr/
 Meson or CMake can build MUMPS
 
 ```sh
-cd build
-meson ..
-ninja
+meson build
+ninja -C build
+
+meson test -C build
 ```
 
 or
 
 ```sh
-cd build
-cmake ..
-cmake --build . -j
-```
-
-## Test libraries
-
-A few simple demos / self-tests are included for use , and are run by:
-```sh
-cd tests/build
-
-cmake ..    # if using Intel compilers:  FC=mpiifort cmake ..
-
-cmake --build .
-
-ctest -V
+cmake -B build -S .
+cmake --build build -j
 ```
 
 To fully specify libraries, do like:

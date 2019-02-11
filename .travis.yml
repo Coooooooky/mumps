@@ -31,16 +31,9 @@ matrix:
 #    - brew install open-mpi > /dev/null
 
 install:
-- cd $TRAVIS_BUILD_DIR/build
-- cmake ..
-- cmake --build .
+- cmake -B build -S .
+- cmake --build build -j
 
-    
 script:
-- cd $TRAVIS_BUILD_DIR/tests/build
-
-- cmake ..
-- cmake --build .
-
+- cd build
 - ctest --output-on-failure
-

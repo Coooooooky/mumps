@@ -17,16 +17,10 @@ init:
 - sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev openmpi-bin libopenmpi-dev libscalapack-openmpi-dev  > /dev/null
 
 install:
-- cd $APPVEYOR_BUILD_FOLDER/build
-- cmake ..
-- cmake --build .
+- cmake -B build -S .
+- cmake --build build -j
   
 test_script:
-- cd $APPVEYOR_BUILD_FOLDER/tests/build
-
-- cmd: cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
-- sh: cmake ..
-
-- cmake --build .
+- cd build
 - ctest --output-on-failure
 

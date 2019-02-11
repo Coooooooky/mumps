@@ -2,9 +2,11 @@ cmake_minimum_required (VERSION 3.12)
 project(FortranLibsDemo Fortran)
 enable_testing()
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake/Modules/)
-
-include(../cmake/compilers.cmake)
+get_directory_property(hasParent PARENT_DIRECTORY)
+if(NOT hasParent)
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake/Modules/)
+  include(../cmake/compilers.cmake)
+endif()
 
 find_package(MPI REQUIRED COMPONENTS Fortran)
 

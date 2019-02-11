@@ -8,6 +8,7 @@ ordering = 'PORD'
 fc = meson.get_compiler('fortran')
 
 add_global_arguments('-w', language : 'fortran')
+#add_global_arguments('-w', language : 'c')
 
 mpic = dependency('mpi', language : 'c')
 mpif = dependency('mpi', language : 'fortran')
