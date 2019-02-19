@@ -1,8 +1,11 @@
 # gfortran >= 6 is required.
-# Ubuntu >= 16.04 needed to build or use MUMPS with MPI
+# Ubuntu >= 18.04 needed to build or use MUMPS with MPI with system scalapack
 language: c
 group: travis_latest
-dist: xenial
+dist: bionic
+
+# need Docker image or Travis to update to Bionic.
+# for now use appveyor
 
 git:
   depth: 25
