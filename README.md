@@ -36,11 +36,11 @@ Instead of compiling, it's often easier to:
 * Ubuntu: `apt install libmumps-dev`
 * CentOS: `yum install MUMPS-openmpi`
 
-MUMPS is available for Linux, OSX and 
+MUMPS is available for Linux, OSX and
 [Windows](http://mumps.enseeiht.fr/index.php?page=links).
 
 
-#### OSX
+### OSX
 
 [Reference](http://mumps.enseeiht.fr/index.php?page=links)
 
@@ -51,3 +51,7 @@ brew options mumps
 brew install mumps
 ```
 
+## Testing
+
+In general, using MPI on Windows requires a username/password to access even the local network.
+https://www.scivision.dev/intel-mpi-windows-bug

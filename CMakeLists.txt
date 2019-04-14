@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
-project(MUMPS 
+project(MUMPS
   LANGUAGES C Fortran
   VERSION 5.1.2
   HOMEPAGE_URL http://mumps.enseeiht.fr/)
 enable_testing()
+
+cmake_policy(SET CMP0076 NEW)
 
 if(NOT DEFINED ARITH)
   set(ARITH d)
@@ -20,5 +22,3 @@ find_package(SCALAPACK REQUIRED)
 
 add_subdirectory(PORD)
 add_subdirectory(src)
-
-add_subdirectory(tests)

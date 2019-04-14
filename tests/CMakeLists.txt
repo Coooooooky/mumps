@@ -1,3 +1,6 @@
+# This test requires special configuration to work on Windows, as does any program using MPI:
+# https://www.scivision.dev/intel-mpi-windows-bug
+
 cmake_minimum_required (VERSION 3.12)
 project(FortranLibsDemo Fortran)
 enable_testing()
@@ -9,11 +12,10 @@ if(NOT hasParent)
 endif()
 
 find_package(MPI REQUIRED COMPONENTS Fortran)
-
 find_package(LAPACK REQUIRED)
 find_package(SCALAPACK REQUIRED)
 
-if(NOT MUMPS_ROOT)
+if(NOT DEFINED MUMPS_ROOT)
   set(MUMPS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../)
 endif()
 find_package(MUMPS REQUIRED COMPONENTS d)
@@ -22,4 +24,6 @@ add_executable(mumpscfg test_mumps.f90)
 target_link_libraries(mumpscfg PRIVATE ${MUMPS_LIBRARIES} ${SCALAPACK_LIBRARIES} ${LAPACK_LIBRARIES} MPI::MPI_Fortran)
 target_include_directories(mumpscfg PRIVATE ${MUMPS_INCLUDE_DIRS})
 
-add_test(NAME MumpsCfg COMMAND mumpscfg)
+add_test(NAME MumpsCfg
+  COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} $<TARGET_FILE:mumpscfg>)
+set_tests_properties(MumpsCfg PROPERTIES TIMEOUT 5)
