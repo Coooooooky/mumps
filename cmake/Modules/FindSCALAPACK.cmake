@@ -9,7 +9,7 @@ unset(SCALAPACK_LIBRARY)
 unset(SCALAPACK_OpenMPI_FOUND)
 unset(SCALAPACK_MPICH_FOUND)
 
-if(DEFINED ENV{MKLROOT})
+if(NOT DEFINED USEMKL AND DEFINED ENV{MKLROOT})
   set(USEMKL ON)
   message(STATUS "Used Intel MKL based on MKLROOT being defined")
 endif()
@@ -59,7 +59,7 @@ endfunction()
 
 get_property(project_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
-find_package(PkgConfig QUIET)
+find_package(PkgConfig)
 if(NOT WIN32)
   find_package(Threads)  # not required--for example Flang
 endif()

@@ -5,7 +5,8 @@
 FindMUMPS
 ---------
 
-Finds the MUMPS library
+Finds the MUMPS library.
+Note that MUMPS generally requires SCALAPACK and LAPACK as well.
 
 COMPONENTS
   s d c z   list one or more. Defaults to ``d``.
@@ -21,7 +22,10 @@ MUMPS_INCLUDE_DIRS
 
 #]=======================================================================]
 
-set(CMAKE_INSTALL_DEFAULT_COMPONENT_NAME d)
+
+if(NOT MUMPS_FIND_COMPONENTS)
+  set(MUMPS_FIND_COMPONENTS d)
+endif()
 
 find_path(MUMPS_INCLUDE_DIR
           NAMES mumps_compat.h)

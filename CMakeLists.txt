@@ -5,6 +5,11 @@ project(MUMPS
   HOMEPAGE_URL http://mumps.enseeiht.fr/)
 enable_testing()
 
+if(NOT CMAKE_BUILD_TYPE)
+  # must have FORCE or it won't take effect
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release" FORCE)
+endif()
+
 cmake_policy(SET CMP0076 NEW)
 
 if(NOT DEFINED ARITH)
