@@ -4,8 +4,8 @@
 set -u
 set -e
 
-# disables Intel compiler from interfering
 MKLROOT=
+LD_LIBRARY_PATH=
 
 export FC=$(which mpif90)
 export CC=$(which mpicc)
@@ -13,14 +13,9 @@ export CC=$(which mpicc)
 echo "FC=$FC"
 echo "CC=$CC"
 
+rm -f build/CMakeCache.txt
 
-## MUMPS
+cmake -DUSEMKL=off -B build -S .
+cmake --build build -j --target install
 
-# no -j due to Makefile...
 
-make s d FC=$FC FL=$FC CC=$CC \
-     LSCOTCHDIR= ISCOTCH= \
-     LMETISDIR= IMETIS= \
-     SCALAPDIR=../../scalapack \
-     SCALAP='-L$(SCALAPDIR) -lscalapack' \
-     ORDERINGSF=-Dpord
