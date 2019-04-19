@@ -49,7 +49,7 @@ COMPONENTS default to Netlib LAPACK / LapackE, otherwise:
   OpenBLAS Lapack for Fortran
 
 ``LAPACK95``
-  get Lapack95 interfaces for MKL or Netlib (must also specify one of IntelPar, IntelSeq, Netlib)
+  get Lapack95 interfaces for MKL or Netlib (must also specify one of MKL, Netlib)
 
 
 Result Variables
