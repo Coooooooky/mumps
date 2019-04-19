@@ -14,7 +14,7 @@ init:
 
 #- sh: sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test" > /dev/null
 #- sh: sudo apt-get -yq update > /dev/null
-- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev openmpi-bin libopenmpi-dev libscalapack-openmpi-dev  > /dev/null
+- sh: sudo apt-get install -yq --no-install-suggests --no-install-recommends liblapack-dev openmpi-bin libopenmpi-dev libscalapack-openmpi-dev libmumps-dev > /dev/null
 
 install:
 - cmake -B build -S .
