@@ -22,41 +22,91 @@ MUMPS_INCLUDE_DIRS
 
 #]=======================================================================]
 
-
-if(NOT MUMPS_FIND_COMPONENTS)
-  set(MUMPS_FIND_COMPONENTS d)
-endif()
+function(mumps_libs)
 
 find_path(MUMPS_INCLUDE_DIR
-          NAMES mumps_compat.h)
+          NAMES mumps_compat.h
+          DOC "MUMPS common header")
+if(NOT MUMPS_INCLUDE_DIR)
+  return()
+endif()
 
 find_library(MUMPS_COMMON
-             NAMES mumps_common)
+             NAMES mumps_common
+             DOC "MUMPS common libraries")
+if(NOT MUMPS_COMMON)
+  return()
+endif()
 
 find_library(PORD
-             NAMES pord)
+             NAMES pord
+             DOC "simplest MUMPS ordering library")
+if(NOT PORD)
+  return()
+endif()
 
-
-FOREACH(comp ${MUMPS_FIND_COMPONENTS})
+foreach(comp ${MUMPS_FIND_COMPONENTS})
   find_library(MUMPS_${comp}_lib
-              NAMES ${comp}mumps)
+               NAMES ${comp}mumps)
 
+  if(NOT MUMPS_${comp}_lib)
+    message(WARNING "MUMPS ${comp} not found")
+    return()
+  endif()
+
+  set(MUMPS_${comp}_FOUND true PARENT_SCOPE)
   list(APPEND MUMPS_LIBRARY ${MUMPS_${comp}_lib})
-  mark_as_advanced(MUMPS_${comp}_lib)
-ENDFOREACH()
+endforeach()
 
+if(MUMPS_LIBRARY)
+set(MUMPS_LIBRARY ${MUMPS_LIBRARY} ${MUMPS_COMMON} ${PORD} PARENT_SCOPE)
+set(MUMPS_INCLUDE_DIR ${MUMPS_INCLUDE_DIR} PARENT_SCOPE)
+endif()
+
+endfunction(mumps_libs)
+
+
+cmake_policy(VERSION 3.3)
+
+if(NOT MUMPS_FIND_COMPONENTS)
+  list(APPEND MUMPS_FIND_COMPONENTS d)
+endif()
+
+mumps_libs()
+
+if(MUMPS_LIBRARY)
+  include(CheckFortranSourceCompiles)
+  set(CMAKE_REQUIRED_INCLUDES ${MUMPS_INCLUDE_DIR})
+
+  find_package(SCALAPACK REQUIRED)
+  find_package(LAPACK REQUIRED)
+  find_package(MPI REQUIRED COMPONENTS Fortran)
+  set(CMAKE_REQUIRED_LIBRARIES ${MUMPS_LIBRARY} ${SCALAPACK_LIBRARIES} ${LAPACK_LIBRARIES} MPI::MPI_Fortran)
+
+  # NOTE: These must be in quotes here: "d" "s" or behavior is intermittent not found
+  if("d" IN_LIST MUMPS_FIND_COMPONENTS)
+    check_fortran_source_compiles("include 'dmumps_struc.h'
+    type(DMUMPS_STRUC) :: mumps_par
+    end"
+      MUMPS_OK SRC_EXT f90)
+  elseif("s" IN_LIST MUMPS_FIND_COMPONENTS)
+    check_fortran_source_compiles("include 'smumps_struc.h'
+      type(SMUMPS_STRUC) :: mumps_par
+      end"
+      MUMPS_OK SRC_EXT f90)
+  endif()
+
+endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(MUMPS
-  REQUIRED_VARS MUMPS_LIBRARY MUMPS_COMMON PORD MUMPS_INCLUDE_DIR)
+  REQUIRED_VARS MUMPS_LIBRARY MUMPS_INCLUDE_DIR # MUMPS_OK
+  HANDLE_COMPONENTS)
 
-# in this order!
 if(MUMPS_FOUND)
-  set(MUMPS_LIBRARIES ${MUMPS_LIBRARY} ${MUMPS_COMMON} ${PORD})
+  set(MUMPS_LIBRARIES ${MUMPS_LIBRARY})
   set(MUMPS_INCLUDE_DIRS ${MUMPS_INCLUDE_DIR})
 endif()
 
-mark_as_advanced(
-MUMPS_INCLUDE_DIR
-MUMPS_LIBRARY)
+mark_as_advanced(MUMPS_INCLUDE_DIR MUMPS_LIBRARY)
 

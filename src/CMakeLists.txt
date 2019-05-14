@@ -9,8 +9,9 @@ mumps_common.c mumps_size.c mumps_io_err.c ana_set_ordering.F mumps_numa.c  mump
 set(IOC_SRC mumps_io.c mumps_io_basic.c mumps_io_thread.c)
 
 add_library(mumps_common ${IOC_SRC} ${COMM_SRC})
-target_link_libraries(mumps_common pord ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
+target_link_libraries(mumps_common PRIVATE pord ${SCALAPACK_LIBRARIES} ${LAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 target_include_directories(mumps_common PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+target_compile_definitions(mumps_common PRIVATE ${CDEFS})
 
 
 # -- Mumps
@@ -26,16 +27,14 @@ target_compile_definitions(${ARITH}mumps
   PRIVATE MUMPS_ARITH=MUMPS_ARITH_${ARITH}
   PRIVATE ${CDEFS})
 target_include_directories(${ARITH}mumps PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(${ARITH}mumps
-#${ARITH}mumps_load ${ARITH}mumps_ooc ${ARITH}ana_aux_par
-  ${SCALAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
+target_link_libraries(${ARITH}mumps PRIVATE ${SCALAPACK_LIBRARIES} ${LAPACK_LIBRARIES} MPI::MPI_Fortran MPI::MPI_C)
 
 add_dependencies(${ARITH}mumps mumps_common)
 
 # --- install
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   if(WIN32)
-    set(HOME $ENV{HOMEDRIVE}$ENV{HOMEPATH})
+    set(HOME $ENV{USERPROFILE})
   else()
     set(HOME $ENV{HOME})
   endif()

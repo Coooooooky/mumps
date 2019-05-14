@@ -8,7 +8,34 @@ http://mumps.enseeiht.fr/
 
 ## Build
 
-Meson or CMake can build MUMPS
+We have provided `build.py` for this project, that works like:
+
+```sh
+python build.py gcc
+```
+
+For Intel, load the compiler environment (set MKLROOT) first, like:
+
+```sh
+. ~/intel.sh
+
+python build.py intel
+```
+
+Likewise, to build for GCC with MKL:
+
+
+```sh
+. ~/intel.sh
+
+python build.py gcc
+```
+
+
+
+### Manual build
+
+Meson &ge; 0.50 or CMake &ge; 3.13 can build MUMPS
 
 ```sh
 meson build
@@ -26,7 +53,7 @@ cmake --build build -j
 
 To fully specify libraries, do like:
 ```sh
-SCALAPACK_ROOT=~/.local/scalapack-gcc8 MUMPS_ROOT=~/.local/mumps-gcc8 MPI_ROOT=~/.local/openmpi-3.1.3-gcc8/ LAPACK_ROOT=~/.local/lapack-gcc8 FC=gfortran-8  cmake ..
+FC=gfortran cmake .. -DSCALAPACK_ROOT=~/lib_gcc/scalapack -DMUMPS_ROOT=~/lib_gcc/mumps -DMPI_ROOT=~/lib_gcc/openmpi-3.1.3 -DLAPACK_ROOT=~/lib_gcc/lapack
 ```
 
 ## prebuilt
@@ -46,8 +73,6 @@ MUMPS is available for Linux, OSX and
 
 ```sh
 brew tap dpo/openblas
-brew tap-pin dpo/openblas
-brew options mumps
 brew install mumps
 ```
 

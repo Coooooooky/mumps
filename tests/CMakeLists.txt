@@ -1,14 +1,16 @@
 # This test requires special configuration to work on Windows, as does any program using MPI:
 # https://www.scivision.dev/intel-mpi-windows-bug
-
-cmake_minimum_required (VERSION 3.12)
-project(FortranLibsDemo Fortran)
+cmake_minimum_required(VERSION 3.12)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release")
+endif()
+project(FortranLibsDemo C Fortran)
 enable_testing()
 
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(NOT hasParent)
-  list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/../cmake/Modules/)
-  include(../cmake/compilers.cmake)
+  list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Modules/)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/compilers.cmake)
 endif()
 
 find_package(MPI REQUIRED COMPONENTS Fortran)

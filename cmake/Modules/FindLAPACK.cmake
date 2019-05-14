@@ -216,8 +216,8 @@ if(LAPACK95_LIBRARY)
     use f95_lapack, only: gesvd=>la_gesvd
     real(wp) :: A(2,2), M(2)
     call gesvd(A,M)
-    end" _lapack_ok SRC_EXT f90)
-  if(NOT _lapack_ok)
+    end" LAPACK95_OK SRC_EXT f90)
+  if(NOT LAPACK95_OK)
     return()
   endif()
 
@@ -333,7 +333,9 @@ if(NOT (OpenBLAS IN_LIST LAPACK_FIND_COMPONENTS
   endif()
 endif()
 
+if(NOT LAPACK_OK)
 message(STATUS "Finding LAPACK components: ${LAPACK_FIND_COMPONENTS}")
+endif()
 
 get_property(project_languages GLOBAL PROPERTY ENABLED_LANGUAGES)
 
@@ -437,33 +439,34 @@ endif()
 set(CMAKE_REQUIRED_INCLUDES ${LAPACK_INCLUDE_DIR})
 set(CMAKE_REQUIRED_LIBRARIES ${LAPACK_LIBRARY})
 
-set(_lapack_ok true)
 if(CMAKE_Fortran_COMPILER AND LAPACK_LIBRARY)
-  set(_blas_func sgemm)
-  set(_lapack_func sgemv)
+  check_fortran_function_exists(sgemm BLAS_OK)
+  check_fortran_function_exists(sgemv LAPACK_OK)
 
-  check_fortran_function_exists(${_blas_func} BLAS_OK)
-  check_fortran_function_exists(${_lapack_func} LAPACK_OK)
   if(NOT (BLAS_OK AND LAPACK_OK))
-    set(_lapack_ok false)
+    set(LAPACK_OK false CACHE BOOL "All necessary LAPACK components OK" FORCE)
   endif()
 endif()
 
-if(_lapack_ok)
+if(LAPACKE IN_LIST LAPACK_FIND_COMPONENTS OR MKL IN_LIST LAPACK_FIND_COMPONENTS)
   if(MSVC OR CMAKE_C_COMPILER)
     include(CheckSymbolExists)
     if(MKL IN_LIST LAPACK_FIND_COMPONENTS)
-      check_symbol_exists(LAPACKE_cheev mkl_lapacke.h _lapack_ok)
+      check_symbol_exists(LAPACKE_cheev mkl_lapacke.h LAPACKE_OK)
     else()
-      check_symbol_exists(LAPACKE_cheev lapacke.h _lapack_ok)
+      check_symbol_exists(LAPACKE_cheev lapacke.h LAPACKE_OK)
     endif()
+  endif()
+
+  if(LAPACKE_OK)
+    set(LAPACK_OK true CACHE BOOL "All necessary LAPACK components OK" FORCE)
   endif()
 endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   LAPACK
-  REQUIRED_VARS LAPACK_LIBRARY _lapack_ok
+  REQUIRED_VARS LAPACK_LIBRARY LAPACK_OK
   HANDLE_COMPONENTS)
 
 if(LAPACK_FOUND)
